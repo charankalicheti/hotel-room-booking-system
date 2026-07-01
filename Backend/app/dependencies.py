@@ -16,10 +16,18 @@ def get_current_user(
 ):
     payload = verify_access_token(token)
 
-    user_id = payload.get("user_id")
-    user_type = payload.get("user_type")
+    raw_user_id = payload.get("user_id")
+    user_type = payload.get("user_type") or payload.get("role")
 
-    if user_id is None or user_type not in {"admin", "customer"}:
+    try:
+        user_id = int(raw_user_id)
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload"
+        )
+
+    if user_type not in {"admin", "customer"}:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token payload"

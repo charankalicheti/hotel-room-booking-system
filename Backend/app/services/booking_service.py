@@ -13,7 +13,10 @@ from app.schemas.booking_schema import BookingCreate
 
 from app.repositories.booking_repository import (
     get_customer_by_id,
+    get_customer_by_name,
+    create_customer,
     get_room_by_id,
+    get_room_by_number,
     create_booking,
     get_booking_by_id,
     get_booking_history,
@@ -51,13 +54,19 @@ def create_new_booking(
     # 1. Validate dates — raises HTTP 400 on bad input
     validate_booking_dates(request.check_in, request.check_out)
 
-    # 2. Customer must exist (read-only, Member 1 owns this table)
-    customer = get_customer_by_id(request.customer_id, db)
+    # 2. Customer lookup by name. If not found, create a guest customer.
+    customer = get_customer_by_name(request.customer_name, db)
     if not customer:
-        raise CustomerNotFoundException()
+        # create a guest email and random password
+        import time, secrets
+        from app.utils.password_hash import hash_password
 
-    # 3. Room must exist (read-only, Member 1 owns this table)
-    room = get_room_by_id(request.room_id, db)
+        guest_email = f"guest_{int(time.time())}_{secrets.token_hex(4)}@example.local"
+        guest_password = hash_password(secrets.token_hex(8))
+        customer = create_customer(request.customer_name, guest_email, guest_password, db)
+
+    # 3. Room lookup by room_number
+    room = get_room_by_number(request.room_number, db)
     if not room:
         raise RoomNotFoundException()
 
@@ -74,8 +83,9 @@ def create_new_booking(
 
     # 6. Build and persist reservation
     reservation = Reservation(
-        customer_id = request.customer_id,
-        room_id     = request.room_id,
+        customer_id = customer.id,
+        customer_name = customer.name,
+        room_id     = room.id,
         check_in    = request.check_in,
         check_out   = request.check_out,
         guests      = request.guests,
