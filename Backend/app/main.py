@@ -3,13 +3,22 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
 
-# Member 1 models
+# ==========================================================
+# Member 1 Models
+# ==========================================================
 from app.models.admin import Admin
 from app.models.customer import Customer
 from app.models.room import Room
 
-# Member 2 models
+# ==========================================================
+# Member 2 Models
+# ==========================================================
 from app.models.reservation import Reservation
+
+# ==========================================================
+# Member 3 Models
+# ==========================================================
+from app.models.payment import Payment
 
 Base.metadata.create_all(bind=engine)
 
@@ -28,16 +37,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Member 1 routers
+# ==========================================================
+# Member 1 Routers
+# ==========================================================
 from app.routers import auth, admin
+
 app.include_router(auth.router)
 app.include_router(admin.router)
 
-# Member 2 routers
+# ==========================================================
+# Member 2 Routers
+# ==========================================================
 from app.routers import bookings
+
 app.include_router(bookings.router)
+
+# ==========================================================
+# Member 3 Routers
+# ==========================================================
+from app.routers import payments, receptionist
+
+app.include_router(payments.router)
+app.include_router(receptionist.router)
 
 
 @app.get("/")
 def root():
-    return {"message": "Hotel Room Booking System API is running"}
+    return {
+        "message": "Hotel Room Booking System API is running"
+    }
