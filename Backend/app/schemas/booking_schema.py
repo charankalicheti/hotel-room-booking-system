@@ -19,8 +19,8 @@ from app.constants.booking_constants import BookingStatus
 
 class BookingCreate(BaseModel):
 
-    customer_id: int
-    room_id: int
+    customer_name: str
+    room_number: str
     check_in: date
     check_out: date
     guests: int = Field(default=1, ge=1)
@@ -47,6 +47,7 @@ class BookingResponse(BaseModel):
 
     id: int
     customer_id: int
+    customer_name: str
     room_id: int
     check_in: date
     check_out: date
@@ -63,6 +64,7 @@ class BookingHistory(BaseModel):
 
     id: int
     room_id: int
+    customer_name: str
     check_in: date
     check_out: date
     total_price: float

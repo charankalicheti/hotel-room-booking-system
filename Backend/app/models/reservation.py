@@ -10,6 +10,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    String,
     Float,
     Enum,
 )
@@ -28,6 +29,11 @@ class Reservation(Base):
         Integer,
         ForeignKey("customers.id"),
         nullable=False
+    )
+
+    customer_name = Column(
+        String(100),
+        nullable=False,
     )
 
     room_id = Column(

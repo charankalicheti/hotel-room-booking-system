@@ -33,6 +33,30 @@ def get_customer_by_id(
     )
 
 
+def get_customer_by_name(
+    name: str,
+    db: Session,
+) -> Customer | None:
+    return (
+        db.query(Customer)
+        .filter(Customer.name == name)
+        .first()
+    )
+
+
+def create_customer(
+    name: str,
+    email: str,
+    password: str,
+    db: Session,
+) -> Customer:
+    new = Customer(name=name, email=email, password=password)
+    db.add(new)
+    db.commit()
+    db.refresh(new)
+    return new
+
+
 # ==========================================================
 # Room Operations
 # ==========================================================
@@ -47,6 +71,17 @@ def get_room_by_id(
     return (
         db.query(Room)
         .filter(Room.id == room_id)
+        .first()
+    )
+
+
+def get_room_by_number(
+    room_number: str,
+    db: Session,
+) -> Room | None:
+    return (
+        db.query(Room)
+        .filter(Room.room_number == room_number)
         .first()
     )
 
