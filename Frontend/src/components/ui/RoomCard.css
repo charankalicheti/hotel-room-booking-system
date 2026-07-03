@@ -1,4 +1,4 @@
-.hotel-card{
+.room-card{
     width:320px;
     background:#fff;
     border-radius:12px;
@@ -7,42 +7,41 @@
     transition:.3s;
 }
 
-.hotel-card:hover{
+.room-card:hover{
     transform:translateY(-8px);
 }
 
-.hotel-image{
+.room-image{
     width:100%;
     height:220px;
     object-fit:cover;
 }
 
-.hotel-content{
+.room-content{
     padding:20px;
 }
 
-.hotel-content h3{
+.room-content h3{
     margin-bottom:10px;
-    font-size:24px;
+    font-size:22px;
 }
 
-.location{
+.capacity{
+    color:#444;
+    margin-bottom:8px;
+}
+
+.amenities{
     color:#666;
-    margin-bottom:10px;
-}
-
-.rating{
-    color:#f59e0b;
-    font-weight:bold;
     margin-bottom:15px;
 }
 
-.hotel-content h4{
-    margin-bottom:20px;
+.room-content h4{
     color:#2563eb;
+    margin-bottom:20px;
 }
 
-.hotel-card button{
+.room-card button{
     width:100%;
     padding:12px;
     border:none;
@@ -53,6 +52,6 @@
     font-size:16px;
 }
 
-.hotel-card button:hover{
+.room-card button:hover{
     background:#1d4ed8;
 }

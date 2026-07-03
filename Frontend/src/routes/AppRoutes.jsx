@@ -9,8 +9,12 @@ import Booking from "../pages/Booking/Booking";
 import Payment from "../pages/Payment/Payment";
 import CustomerDashboard from "../pages/CustomerDashboard/CustomerDashboard";
 import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
-
+import RoomDetails from "../pages/RoomDetails/RoomDetails";
 import ProtectedRoute from "./ProtectedRoute";
+import BookingSummary from "../pages/BookingSummary/BookingSummary";
+import BookingSuccess from "../pages/BookingSuccess/BookingSuccess";
+import MyBookings from "../pages/MyBookings/MyBookings";
+
 
 function AppRoutes() {
   return (
@@ -23,45 +27,50 @@ function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/hotels" element={<Hotels />} />
       <Route path="/rooms" element={<Rooms />} />
+      <Route path="/room-details" element={<RoomDetails />} />
 
       {/* Protected Routes */}
 
       <Route
         path="/booking"
-        element={
-          <ProtectedRoute>
-            <Booking />
-          </ProtectedRoute>
-        }
+        element={<Booking />}
       />
-
       <Route
+        path="/payment"
+        element={<Payment />}
+      />
+      {/* <Route
         path="/payment"
         element={
           <ProtectedRoute>
             <Payment />
           </ProtectedRoute>
         }
-      />
+      /> */}
 
-      <Route
-        path="/customer-dashboard"
-        element={
-          <ProtectedRoute>
-            <CustomerDashboard />
-          </ProtectedRoute>
-        }
-      />
+      
 
       <Route
         path="/admin-dashboard"
-        element={
-          <ProtectedRoute>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
+        element={<AdminDashboard />}
+        
       />
-
+      <Route
+        path="/booking-summary"
+        element={<BookingSummary />}
+      />
+      <Route  
+        path="/booking-success"
+        element={<BookingSuccess />}
+      />
+      <Route
+        path="/my-bookings"
+        element={<MyBookings />}
+      />
+      <Route
+        path="/customer-dashboard"
+        element={<CustomerDashboard />}
+      />
     </Routes>
   );
 }

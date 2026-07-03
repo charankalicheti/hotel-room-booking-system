@@ -1,19 +1,37 @@
 import "./HotelCard.css";
 
-function HotelCard({ name, location, price, rating }) {
+function HotelCard({
+  name,
+  image,
+  location,
+  price,
+  rating,
+}) {
   return (
     <div className="hotel-card">
-      <div className="hotel-image">🏨</div>
+      <img
+        src={image}
+        alt={name}
+        className="hotel-image"
+      />
 
-      <h3>{name}</h3>
+      <div className="hotel-content">
+        <h3>{name}</h3>
 
-      <p>{location}</p>
+        <p className="location">
+          📍 {location}
+        </p>
 
-      <p className="rating">{rating}</p>
+        <p className="rating">
+          ⭐ {rating}
+        </p>
 
-      <h4>₹ {price} / Night</h4>
+        <h4>₹ {price} / Night</h4>
 
-      <button>Book Now</button>
+        <button>
+          View Rooms
+        </button>
+      </div>
     </div>
   );
 }
