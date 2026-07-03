@@ -1,11 +1,11 @@
 import React from 'react';
 import RoomCard from './RoomCard';
 
-export default function RoomGrid({ rooms, isAdmin, onDelete }) {
+export default function RoomGrid({ rooms, isAdmin, onDelete, onBookingCreated }) {
   return (
     <div className="room-grid">
       {rooms.map((room) => (
-        <RoomCard key={room.id} room={room} isAdmin={isAdmin} onDelete={onDelete} />
+        <RoomCard key={room.id} room={room} isAdmin={isAdmin} onDelete={onDelete} onBookingCreated={onBookingCreated} />
       ))}
     </div>
   );

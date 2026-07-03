@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import BookingModal from './BookingModal';
 
-export default function RoomCard({ room, isAdmin, onDelete }) {
+export default function RoomCard({ room, isAdmin, onDelete, onBookingCreated }) {
+  const [showBooking, setShowBooking] = useState(false);
+
   return (
     <article className="room-card">
       <div className="room-card-main">
@@ -17,9 +20,17 @@ export default function RoomCard({ room, isAdmin, onDelete }) {
         <span>{room.is_available ? 'Available' : 'Unavailable'}</span>
       </div>
 
-      {isAdmin && (
-        <button className="room-delete" onClick={() => onDelete(room.id)}>Delete</button>
-      )}
+      <div className="card-actions">
+        {!isAdmin && room.is_available && (
+          <button className="primary" onClick={() => setShowBooking(true)}>Book</button>
+        )}
+
+        {isAdmin && (
+          <button className="room-delete" onClick={() => onDelete(room.id)}>Delete</button>
+        )}
+      </div>
+
+      {showBooking && <BookingModal room={room} onClose={() => setShowBooking(false)} onBookingCreated={onBookingCreated} />}
     </article>
   );
 }

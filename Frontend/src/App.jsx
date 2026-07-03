@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import AuthForm from './components/AuthForm';
-import RoomForm from './components/RoomForm';
-import RoomGrid from './components/RoomGrid';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import HomePage from './pages/HomePage';
+import RoomsPage from './pages/RoomsPage';
+import AuthPage from './pages/AuthPage';
 
 const API_BASE = 'http://127.0.0.1:8000';
 
 function App() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({
     name: '',
@@ -20,6 +23,13 @@ function App() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [bookings, setBookings] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('adminBookings') || '[]');
+    } catch (error) {
+      return [];
+    }
+  });
   const [newRoom, setNewRoom] = useState({
     room_number: '',
     room_type: 'Standard',
@@ -32,16 +42,18 @@ function App() {
   const isAdmin = useMemo(() => role === 'admin', [role]);
 
   useEffect(() => {
-    if (token) {
-      fetchRooms();
-    }
+    fetchRooms();
   }, [token]);
+
+  useEffect(() => {
+    localStorage.setItem('adminBookings', JSON.stringify(bookings));
+  }, [bookings]);
 
   async function fetchRooms() {
     try {
       const response = await fetch(`${API_BASE}/rooms/`);
       const data = await response.json();
-      setRooms(data);
+      setRooms(Array.isArray(data) ? data : []);
     } catch (error) {
       setMessage('Unable to load rooms right now.');
     }
@@ -84,6 +96,7 @@ function App() {
         setToken(data.access_token);
         setRole(data.role);
         setMessage('Logged in successfully.');
+        navigate('/rooms');
       } else {
         setMode('login');
         setMessage('Registration successful. You can now log in.');
@@ -160,6 +173,33 @@ function App() {
     }
   }
 
+  function handleBookingCreated(booking) {
+    const normalizedBooking = {
+      id: booking?.id ?? Date.now(),
+      customer_name: booking?.customer_name || booking?.customerName || 'Guest',
+      room_id: booking?.room_id ?? booking?.roomId ?? null,
+      room_number: booking?.room_number || booking?.roomNumber || '',
+      check_in: booking?.check_in || booking?.checkIn || '',
+      check_out: booking?.check_out || booking?.checkOut || '',
+      guests: booking?.guests ?? 1,
+      total_price: booking?.total_price ?? booking?.totalPrice ?? 0,
+      status: booking?.status || 'BOOKED',
+      created_at: booking?.created_at || booking?.createdAt || new Date().toISOString(),
+    };
+
+    setBookings((current) => [normalizedBooking, ...current]);
+    setMessage('Booking created successfully.');
+  }
+
+  function handleDeleteBooking(bookingId) {
+    if (!window.confirm('Delete this booking permanently?')) {
+      return;
+    }
+
+    setBookings((current) => current.filter((booking) => booking.id !== bookingId));
+    setMessage('Booking deleted successfully.');
+  }
+
   function handleLogout() {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
@@ -167,66 +207,55 @@ function App() {
     setRole('');
     setRooms([]);
     setMessage('Logged out.');
+    navigate('/');
   }
 
   return (
-    <div className="app-shell">
-      <header className="hero">
-        <div>
-          <p className="eyebrow">Hotel Booking Admin</p>
-          <h1>Stylish room management for your property.</h1>
-          <p className="hero-copy">Authenticate, publish rooms, and manage inventory with a modern admin dashboard.</p>
-        </div>
-      </header>
+      <div className="app-shell">
+        <NavBar token={token} role={role} onLogout={handleLogout} />
 
-      <main className="content-grid">
-        <section className="card auth-panel">
-          <div className="tabs">
-            <button className={mode === 'login' ? 'active' : ''} onClick={() => setMode('login')}>Login</button>
-            <button className={mode === 'register' ? 'active' : ''} onClick={() => setMode('register')}>Register</button>
-          </div>
-          <AuthForm mode={mode} form={form} onChange={setForm} onSubmit={handleAuthSubmit} loading={loading} />
-        </section>
-
-        <section className="card room-panel">
-          <div className="toolbar">
-            <div>
-              <h2>Available Rooms</h2>
-              <p className="subtitle">Browse the latest rooms and manage inventory.</p>
-            </div>
-            {token && (
-              <button className="secondary" onClick={handleLogout}>Logout</button>
-            )}
-          </div>
-
-          {token && isAdmin && (
-            <div className="room-actions">
-              <button className="primary" onClick={() => setShowAddForm((value) => !value)}>
-                {showAddForm ? 'Hide room form' : 'Add new room'}
-              </button>
-            </div>
-          )}
-
-          {showAddForm && isAdmin && (
-            <RoomForm
-              newRoom={newRoom}
-              onChange={setNewRoom}
-              onSubmit={handleAddRoom}
-              onCancel={() => { setShowAddForm(false); setNewRoom({ room_number: '', room_type: 'Standard', price: 120, capacity: 2, description: '', is_available: true }); }}
-              loading={loading}
+        <main className="content-window">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/rooms"
+              element={
+                <RoomsPage
+                  rooms={rooms}
+                  isAdmin={isAdmin}
+                  onDelete={handleDeleteRoom}
+                  token={token}
+                  showAddForm={showAddForm}
+                  setShowAddForm={setShowAddForm}
+                  newRoom={newRoom}
+                  setNewRoom={setNewRoom}
+                  handleAddRoom={handleAddRoom}
+                  loading={loading}
+                  bookings={bookings}
+                  onBookingCreated={handleBookingCreated}
+                  onDeleteBooking={handleDeleteBooking}
+                />
+              }
             />
-          )}
+            <Route
+              path="/auth"
+              element={
+                <AuthPage
+                  mode={mode}
+                  setMode={setMode}
+                  form={form}
+                  onChange={setForm}
+                  onSubmit={handleAuthSubmit}
+                  loading={loading}
+                />
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
 
-          {rooms.length === 0 ? (
-            <p className="empty-state">No rooms available. Add a room to get started.</p>
-          ) : (
-            <RoomGrid rooms={rooms} isAdmin={isAdmin} onDelete={handleDeleteRoom} />
-          )}
-        </section>
-      </main>
-
-      {message && <div className="toast">{message}</div>}
-    </div>
+        {message && <div className="toast">{message}</div>}
+      </div>
   );
 }
 
