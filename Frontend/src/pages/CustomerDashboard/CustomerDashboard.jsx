@@ -1,80 +1,112 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { getCustomerBookings } from "../../services/bookingService";
 import "./CustomerDashboard.css";
-
+import Rooms from "../Rooms/Rooms";
+import MyBookings from "../MyBookings/MyBookings";
 function CustomerDashboard() {
 
-  const stats = [
+  const [stats, setStats] = useState([
     {
       title: "Total Bookings",
-      count: 12,
+      count: 0,
       icon: "📋",
     },
     {
       title: "Upcoming",
-      count: 3,
+      count: 0,
       icon: "📅",
     },
     {
       title: "Completed",
-      count: 7,
+      count: 0,
       icon: "✅",
     },
     {
       title: "Cancelled",
-      count: 2,
+      count: 0,
       icon: "❌",
     },
-  ];
+  ]);
+
+  
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const [profile, setProfile] = useState({
-    name: "Sravani",
-    email: "sravani@gmail.com",
-    phone: "9876543210",
-    address: "Hyderabad, Telangana",
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
-  const dashboardRef = useRef(null);
-  const profileRef = useRef(null);
-  const upcomingRef = useRef(null);
-  const historyRef = useRef(null);
+ 
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [activePage, setActivePage] = useState("dashboard");
 
-  const upcomingBookings = [
-    {
-      id: "HB10245",
-      hotel: "Taj Hotel",
-      room: "Deluxe Room",
-      checkIn: "10-Jul-2026",
-      checkOut: "12-Jul-2026",
-      status: "Upcoming",
-    },
-    {
-      id: "HB10246",
-      hotel: "Novotel",
-      room: "Suite Room",
-      checkIn: "18-Jul-2026",
-      checkOut: "20-Jul-2026",
-      status: "Upcoming",
-    },
-  ];
-  const bookingHistory = [
-    {
-      id: "HB10230",
-      hotel: "ITC Grand",
-      room: "Suite Room",
-      checkIn: "05-Jun-2026",
-      checkOut: "08-Jun-2026",
-      status: "Completed",
-    },
-    {
-      id: "HB10218",
-      hotel: "Radisson Blu",
-      room: "Deluxe Room",
-      checkIn: "18-May-2026",
-      checkOut: "20-May-2026",
-      status: "Cancelled",
-    },
-  ];
+  const [upcomingBookings, setUpcomingBookings] = useState([]);
+  const [bookingHistory, setBookingHistory] = useState([]);
+  useEffect(() => {
+    if (user?.id) {
+      loadBookings();
+    }
+  }, []);
+
+  const loadBookings = async () => {
+    try {
+      if (!user?.id) return;
+      const data = await getCustomerBookings(user.id);
+
+      const upcoming = data.filter(
+        (booking) => booking.status === "BOOKED"
+      );
+
+      const history = data.filter(
+        (booking) =>
+          booking.status === "COMPLETED" ||
+          booking.status === "CANCELLED"
+      );
+
+      setUpcomingBookings(upcoming);
+      setBookingHistory(history);
+
+      setStats([
+        {
+          title: "Total Bookings",
+          count: data.length,
+          icon: "📋",
+        },
+        {
+          title: "Upcoming",
+          count: upcoming.length,
+          icon: "📅",
+        },
+        {
+          title: "Completed",
+          count: history.filter(
+            (b) => b.status === "COMPLETED"
+          ).length,
+          icon: "✅",
+        },
+        {
+          title: "Cancelled",
+          count: history.filter(
+            (b) => b.status === "CANCELLED"
+          ).length,
+          icon: "❌",
+        },
+      ]);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
   const handleChange = (e) => {
     setProfile({
       ...profile,
@@ -86,11 +118,7 @@ function CustomerDashboard() {
     setIsEditing(false);
     alert("Profile Updated Successfully!");
   };
-  const scrollToSection = (ref) => {
-    ref.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  };
+  
 
   return (
     <div className="dashboard-container">
@@ -103,35 +131,38 @@ function CustomerDashboard() {
 
         <ul>
 
-          <li
-            onClick={() => scrollToSection(dashboardRef)}
-          >
+          <li onClick={() => setActivePage("dashboard")}>
             Dashboard
           </li>
 
-          <li
-            onClick={() => scrollToSection(profileRef)}
-          >
+          <li onClick={() => setActivePage("profile")}>
             My Profile
           </li>
 
-          <li
-            onClick={() => scrollToSection(upcomingRef)}
-          >
+          <li onClick={() => setActivePage("rooms")}>
+            Browse Rooms
+          </li>
+
+          <li onClick={() => setActivePage("upcoming")}>
             Upcoming Bookings
           </li>
 
-          <li
-            onClick={() => scrollToSection(historyRef)}
-          >
+          <li onClick={() => setActivePage("bookings")}>
+            My Bookings
+          </li>
+
+          <li onClick={() => setActivePage("history")}>
             Booking History
           </li>
 
-          <li>
+          <li onClick={handleLogout}>
             Logout
           </li>
 
         </ul>
+
+
+
 
       </aside>
 
@@ -139,17 +170,20 @@ function CustomerDashboard() {
 
       <main className="dashboard-content">
 
-        <h1>Welcome, {profile.name} 👋</h1>
+        {activePage === "dashboard" && (
+        <>
 
-        <p>
-          Manage your bookings and profile from your dashboard.
-        </p>
+          <h1>Welcome, {profile.name} 👋</h1>
+
+          <p>
+            Manage your bookings and profile from your dashboard.
+          </p>
 
         {/* Statistics */}
 
         <div
           className="stats-grid"
-          ref={dashboardRef}
+          
         >
 
           {stats.map((item, index) => (
@@ -187,11 +221,16 @@ function CustomerDashboard() {
 
         </div>
 
+            </>
+          )}
+
         {/* Profile Card */}
+
+        {activePage === "profile" && (
 
         <div
           className="profile-card"
-          ref={profileRef}
+          
         >
 
           <h2>My Profile</h2>
@@ -276,90 +315,119 @@ function CustomerDashboard() {
 
         </div>
 
+        )}
+
+        {/* Browse Rooms */}
+
+        {activePage === "rooms" && (
+          <Rooms />
+        )}
+
         {/* Upcoming Bookings */}
+
+        {activePage === "upcoming" && (
 
         <div
           className="upcoming-bookings"
-          ref={upcomingRef}
-        >
+                  
+                >
 
           <h2>Upcoming Bookings</h2>
 
-          {upcomingBookings.map((booking) => (
+          {upcomingBookings.length > 0 ? (
+            upcomingBookings.map((booking) => (
 
-            <div className="booking-card" key={booking.id}>
+              <div className="booking-card" key={booking.id}>
 
-              <div className="booking-info">
+                <div className="booking-info">
 
-                <h3>{booking.hotel}</h3>
+                  <h3>Hotel</h3>
 
-                <p>
-                  <strong>Booking ID:</strong> {booking.id}
-                </p>
+                  <p>
+                    <strong>Booking ID:</strong> {booking.id}
+                  </p>
 
-                <p>
-                  <strong>Room:</strong> {booking.room}
-                </p>
+                  <p>
+                    <strong>Room Number:</strong> {booking.room_number || booking.room_id}
+                  </p>
 
-                <p>
-                  <strong>Check-In:</strong> {booking.checkIn}
-                </p>
+                  <p>
+                    <strong>Check-In:</strong> {booking.check_in}
+                  </p>
 
-                <p>
-                  <strong>Check-Out:</strong> {booking.checkOut}
-                </p>
+                  <p>
+                    <strong>Check-Out:</strong> {booking.check_out}
+                  </p>
 
-                <span className="status">
-                  {booking.status}
-                </span>
+                  <span className="status">
+                    {booking.status}
+                  </span>
+
+                </div>
+
+                <button
+                  onClick={() =>
+                    navigate(`/booking-details/${booking.id}`)
+                  }
+                >
+                  View Details
+                </button>
 
               </div>
 
-              <button>
-                View Details
-              </button>
-
-            </div>
-
-          ))}
-
+            ))
+          ) : (
+            <p>No Upcoming Bookings</p>
+          )}
         </div>
-      {/* Booking History */}
+
+        )}
+
+        {/* My Bookings */}
+
+        {activePage === "bookings" && (
+          <MyBookings />
+        )}
+
+        {/* Booking History */}
+      {activePage === "history" && (
 
       <div
         className="booking-history"
-        ref={historyRef}
+        
       >
 
         <h2>Booking History</h2>
 
-        {bookingHistory.map((booking) => (
+        {bookingHistory.length > 0 ? (
+          bookingHistory.map((booking) => (
+
 
           <div className="history-card" key={booking.id}>
 
             <div className="history-info">
 
-              <h3>{booking.hotel}</h3>
+              <h3>{booking.hotel_name}</h3>
 
               <p>
                 <strong>Booking ID:</strong> {booking.id}
               </p>
 
               <p>
-                <strong>Room:</strong> {booking.room}
+                <strong>Room:</strong> {booking.room_type}
               </p>
 
               <p>
-                <strong>Check-In:</strong> {booking.checkIn}
+                <strong>Check-In:</strong> {booking.check_in}
               </p>
 
               <p>
-                <strong>Check-Out:</strong> {booking.checkOut}
+                <strong>Check-Out:</strong> {booking.check_out}
               </p>
 
               <span
                 className={
-                  booking.status === "Completed"
+                  booking.status === "COMPLETED"
                     ? "completed-status"
                     : "cancelled-status"
                 }
@@ -369,15 +437,26 @@ function CustomerDashboard() {
 
             </div>
 
-            <button>
+            <button
+              onClick={() =>
+                navigate(`/booking-details/${booking.id}`)
+              }
+            >
               Booking Details
             </button>
 
           </div>
 
-        ))}
+        ))
+        ) : (
+          <p>No Booking History</p>
+        )}
+
+
 
       </div>
+      
+      )}
 
       </main>
 
@@ -386,3 +465,15 @@ function CustomerDashboard() {
 }
 
 export default CustomerDashboard;
+
+
+
+
+
+
+
+
+
+
+
+

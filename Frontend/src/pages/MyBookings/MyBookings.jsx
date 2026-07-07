@@ -1,126 +1,144 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./MyBookings.css";
+import {
+  getCustomerBookings,
+  cancelBooking,
+} from "../../services/bookingService";
 
 function MyBookings() {
+  const [bookings, setBookings] = useState([]);
+  const navigate = useNavigate();
 
-  const [bookings, setBookings] = useState([
-    {
-      id: "HB10245",
-      hotel: "Taj Hotel",
-      room: "Deluxe Room",
-      checkIn: "10-Jul-2026",
-      checkOut: "12-Jul-2026",
-      status: "Confirmed",
-    },
-    {
-      id: "HB10246",
-      hotel: "Novotel",
-      room: "Suite Room",
-      checkIn: "18-Jul-2026",
-      checkOut: "20-Jul-2026",
-      status: "Upcoming",
-    },
-    {
-      id: "HB10247",
-      hotel: "ITC Grand",
-      room: "Family Room",
-      checkIn: "05-Jun-2026",
-      checkOut: "07-Jun-2026",
-      status: "Completed",
-    },
-  ]);
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  const cancelBooking = (bookingId) => {
+  useEffect(() => {
+    if (user?.id) {
+      loadBookings();
+    }
+  }, []);
 
+  const loadBookings = async () => {
+    try {
+      const data = await getCustomerBookings(user.id);
+
+      setBookings(data);
+    } catch (error) {
+      console.error(error);
+      alert("Unable to load bookings.");
+    }
+  };
+
+  const handleCancelBooking = async (bookingId) => {
     const confirmCancel = window.confirm(
       "Are you sure you want to cancel this booking?"
     );
 
     if (!confirmCancel) return;
 
-    const updatedBookings = bookings.map((booking) =>
-      booking.id === bookingId
-        ? { ...booking, status: "Cancelled" }
-        : booking
-    );
+    try {
+      await cancelBooking(bookingId);
 
-    setBookings(updatedBookings);
+      alert("Booking cancelled successfully.");
 
-    alert("Booking cancelled successfully.");
+      loadBookings();
+    } catch (error) {
+      console.error(error);
+      alert("Unable to cancel booking.");
+    }
   };
 
   return (
     <div className="bookings-container">
-
       <h1>My Bookings</h1>
 
       <div className="booking-grid">
+        {bookings.length === 0 ? (
+          <h2>No Bookings Found</h2>
+        ) : (
+          bookings.map((booking) => (
+            <div
+              className="booking-card"
+              key={booking.id}
+            >
+              <h3>{booking.hotel || "Hotel"}</h3>
 
-        {bookings.map((booking) => (
+              <p>
+                <strong>Booking ID:</strong>{" "}
+                {booking.id}
+              </p>
 
-          <div className="booking-card" key={booking.id}>
+              <p>
+                <strong>Room:</strong>{" "}
+                {booking.room_id}
+              </p>
 
-            <h3>{booking.hotel}</h3>
+              <p>
+                <strong>Check-In:</strong>{" "}
+                {booking.check_in}
+              </p>
 
-            <p>
-              <strong>Booking ID:</strong> {booking.id}
-            </p>
+              <p>
+                <strong>Check-Out:</strong>{" "}
+                {booking.check_out}
+              </p>
 
-            <p>
-              <strong>Room:</strong> {booking.room}
-            </p>
+              <p>
+                <strong>Guests:</strong>{" "}
+                {booking.guests}
+              </p>
 
-            <p>
-              <strong>Check-In:</strong> {booking.checkIn}
-            </p>
+              <p>
+                <strong>Status:</strong>
 
-            <p>
-              <strong>Check-Out:</strong> {booking.checkOut}
-            </p>
+                <span
+                  className={
+                    booking.status === "CANCELLED"
+                      ? "status cancelled"
+                      : booking.status === "COMPLETED"
+                      ? "status completed"
+                      : "status"
+                  }
+                >
+                  {booking.status}
+                </span>
+              </p>
 
-            <p>
-              <strong>Status:</strong>
+              <div className="button-group">
+                <button
+                  className="view-btn"
+                  onClick={() =>
+                    navigate(`/booking-details/${booking.id}`)
+                  }
+                >
+                  View Details
+                </button>
 
-              <span
-                className={
-                  booking.status === "Cancelled"
-                    ? "status cancelled"
-                    : "status"
-                }
-              >
-                {booking.status}
-              </span>
-            </p>
-
-            <div className="button-group">
-
-              <button className="view-btn">
-                View Details
-              </button>
-
-              <button
-                className="cancel-btn"
-                onClick={() => cancelBooking(booking.id)}
-                disabled={
-                    booking.status === "Cancelled" ||
-                    booking.status === "Completed"
-                }
-              >
-                {booking.status === "Cancelled"
-                  ? "Cancelled"
-                  : booking.status === "Completed"
-                  ? "Completed"
-                  : "Cancel Booking"}
-              </button>
-
+                <button
+                  className="cancel-btn"
+                  onClick={() =>
+                    handleCancelBooking(
+                      booking.id
+                    )
+                  }
+                  disabled={
+                    booking.status === "CANCELLED" ||
+                    booking.status === "COMPLETED"
+                  }
+                >
+                  {
+                    booking.status === "CANCELLED"
+                      ? "Cancelled"
+                      : booking.status === "COMPLETED"
+                      ? "Completed"
+                      : "Cancel Booking"
+                  }
+                </button>
+              </div>
             </div>
-
-          </div>
-
-        ))}
-
+          ))
+        )}
       </div>
-
     </div>
   );
 }

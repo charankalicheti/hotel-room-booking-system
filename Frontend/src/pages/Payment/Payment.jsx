@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Payment.css";
+import { makePayment } from "../../services/paymentService";
 
 function Payment() {
 
   const navigate = useNavigate();
+  const { state } = useLocation();
+
+  const booking = state?.booking;
+  const room = state?.room;
 
   const [payment, setPayment] = useState({
     cardName: "",
@@ -50,7 +55,7 @@ function Payment() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
@@ -61,7 +66,36 @@ function Payment() {
       return;
     }
 
-    navigate("/booking-success");
+    try {
+
+      const paymentData = {
+        reservation_id: booking.id,
+        payment_method: "card",
+      };
+
+      const response = await makePayment(paymentData);
+
+      alert(response.message);
+
+      navigate("/booking-success", {
+        state: {
+          booking,
+          room,
+          payment: response.payment,
+        },
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      if (error.response) {
+        alert(error.response.data.detail);
+      } else {
+        alert("Payment Failed");
+      }
+
+    }
 
   };
 

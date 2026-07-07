@@ -13,7 +13,7 @@ function Home() {
         <h1>Find Your Perfect Stay</h1>
 
         <p>
-          Luxury hotels, comfortable rooms, and the best prices for your next
+          Luxury rooms, comfortable stay, and the best prices for your next
           trip.
         </p>
 
@@ -36,30 +36,16 @@ function Home() {
         <button>Explore Rooms</button>
       </section>
 
-      {/* Featured Hotels */}
+      {/* Our Hotel */}
       <section className="featured-hotels">
-        <h2>Featured Hotels</h2>
+        <h2>Our Hotel</h2>
 
         <div className="hotel-list">
           <HotelCard
-            name="Luxury Hotel"
+            name="Royal Hotel"
             location="Hyderabad"
             price="5000"
             rating="★★★★★"
-          />
-
-          <HotelCard
-            name="Beach Resort"
-            location="Goa"
-            price="8500"
-            rating="★★★★★"
-          />
-
-          <HotelCard
-            name="Business Hotel"
-            location="Bangalore"
-            price="4200"
-            rating="★★★★☆"
           />
         </div>
       </section>

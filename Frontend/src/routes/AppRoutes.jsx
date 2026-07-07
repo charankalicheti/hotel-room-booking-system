@@ -14,63 +14,76 @@ import ProtectedRoute from "./ProtectedRoute";
 import BookingSummary from "../pages/BookingSummary/BookingSummary";
 import BookingSuccess from "../pages/BookingSuccess/BookingSuccess";
 import MyBookings from "../pages/MyBookings/MyBookings";
-
+import BookingDetails from "../pages/BookingDetails/BookingDetails";  
 
 function AppRoutes() {
   return (
     <Routes>
 
       {/* Public Routes */}
-
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/hotels" element={<Hotels />} />
       <Route path="/rooms" element={<Rooms />} />
       <Route path="/room-details" element={<RoomDetails />} />
 
       {/* Protected Routes */}
-
       <Route
         path="/booking"
         element={<Booking />}
       />
+
       <Route
         path="/payment"
         element={<Payment />}
       />
-      {/* <Route
-        path="/payment"
-        element={
-          <ProtectedRoute>
-            <Payment />
-          </ProtectedRoute>
-        }
-      /> */}
 
-      
-
-      <Route
-        path="/admin-dashboard"
-        element={<AdminDashboard />}
-        
-      />
       <Route
         path="/booking-summary"
         element={<BookingSummary />}
       />
-      <Route  
+
+      <Route
         path="/booking-success"
         element={<BookingSuccess />}
       />
+
+      {/* My Bookings */}
       <Route
         path="/my-bookings"
         element={<MyBookings />}
       />
+
+      {/* Booking History (same page as My Bookings) */}
+      <Route
+        path="/booking-history"
+        element={<MyBookings />}
+      />
+      <Route
+        path="/booking-details/:id"
+        element={<BookingDetails />}
+      />
+
+      {/* Customer Dashboard */}
       <Route
         path="/customer-dashboard"
-        element={<CustomerDashboard />}
+        element={
+          <ProtectedRoute role="customer">
+            <CustomerDashboard />
+          </ProtectedRoute>
+        }
       />
+
+      {/* Admin Dashboard */}
+      <Route
+        path="/admin-dashboard"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
     </Routes>
   );
 }

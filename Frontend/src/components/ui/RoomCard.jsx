@@ -2,6 +2,8 @@ import "./RoomCard.css";
 import { useNavigate } from "react-router-dom";
 
 function RoomCard({
+  id,
+  roomNumber,
   image,
   type,
   capacity,
@@ -12,7 +14,19 @@ function RoomCard({
   const navigate = useNavigate();
 
   const handleBookNow = () => {
-    navigate("/room-details");
+    navigate("/room-details", {
+      state: {
+        room: {
+          id,
+          roomNumber,
+          type,
+          capacity,
+          amenities,
+          price,
+          image,
+        },
+      },
+    });
   };
 
   return (

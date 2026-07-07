@@ -94,3 +94,40 @@
 .filter-container select:focus{
     border-color:#2563eb;
 }
+/* Search Section */
+
+.search-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    margin:30px auto;
+    flex-wrap:wrap;
+}
+
+.search-container input,
+.search-container select{
+    width:180px;
+    height:42px;
+    padding:0 10px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:15px;
+}
+
+.search-btn{
+    width:auto !important;
+    height:42px;
+    padding:0 25px;
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.search-btn:hover{
+    background:#1d4ed8;
+}

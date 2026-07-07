@@ -20,6 +20,7 @@ from app.database import Base
 from app.constants.booking_constants import BookingStatus
 
 
+
 class Reservation(Base):
     __tablename__ = "reservations"
 

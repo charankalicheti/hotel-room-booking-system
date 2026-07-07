@@ -8,6 +8,12 @@
 
 .admin-sidebar{
     width:260px;
+    min-width:260px;
+    height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+    overflow-y:auto;
     background:#1e3a8a;
     color:white;
     padding:30px 20px;
@@ -31,8 +37,23 @@
     padding:30px 20px;
 }
 
-.admin-sidebar li:hover{
-    background:#2563eb;
+.admin-sidebar ul{
+    list-style:none;
+    padding:0;
+    margin-top:30px;
+}
+
+.admin-sidebar li{
+    padding:14px 18px;
+    margin-bottom:18px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
+    line-height:1.5;
+}
+.admin-sidebar li{
+    display:flex;
+    align-items:center;
 }
 
 .admin-sidebar .active{
@@ -43,7 +64,7 @@
 
 .admin-content{
     flex:1;
-    width:100%;
+    margin-left:260px;
     padding:40px;
 }
 
@@ -93,15 +114,16 @@
 
 .admin-stat-card{
     background:white;
-    border-radius:12px;
-    padding:25px;
+    border-radius:16px;
+    padding:30px;
     text-align:center;
-    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
     transition:.3s;
 }
 
 .admin-stat-card:hover{
-    transform:translateY(-5px);
+    transform:translateY(-8px);
+    box-shadow:0 15px 35px rgba(37,99,235,.25);
 }
 
 .admin-stat-icon{
@@ -191,19 +213,29 @@
     background:#f59e0b;
     color:white;
     border:none;
-    padding:8px 15px;
-    border-radius:6px;
-    margin-right:10px;
+    padding:9px 18px;
+    border-radius:8px;
     cursor:pointer;
+    transition:.3s;
 }
 
 .delete-btn{
     background:#ef4444;
     color:white;
     border:none;
-    padding:8px 15px;
-    border-radius:6px;
+    padding:9px 18px;
+    border-radius:8px;
     cursor:pointer;
+    transition:.3s;
+}
+.edit-btn:hover{
+    opacity:.9;
+    transform:translateY(-2px);
+}
+
+.delete-btn:hover{
+    opacity:.9;
+    transform:translateY(-2px);
 }
 /* Room Form */
 
@@ -317,4 +349,46 @@
 
 .cancelled-status{
     background:#ef4444;
+}
+.admin-sidebar li.active {
+  background: #ffffff;
+  color: #0d6efd;
+  font-weight: bold;
+  border-radius: 6px;
+}
+.manage-rooms table,
+.manage-bookings table,
+.manage-hotels table{
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.manage-rooms tr:hover,
+.manage-bookings tr:hover,
+.manage-hotels tr:hover{
+    background:#f8fafc;
+}
+@media (max-width:768px){
+
+.admin-sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+}
+
+.admin-content{
+    margin-left:0;
+    padding:20px;
+}
+
+.admin-stats{
+    grid-template-columns:1fr;
+}
+
+.manage-rooms,
+.manage-bookings,
+.hotel-form{
+    overflow-x:auto;
+}
+
 }

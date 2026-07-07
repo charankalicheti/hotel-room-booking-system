@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { createBooking } from "../../services/bookingService";
 import "./Booking.css";
 
 function Booking() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const room = state?.room;
+
+if (!room) {
+  return <h2>No Room Selected</h2>;
+}
 
   const [booking, setBooking] = useState({
     fullName: "",
@@ -81,7 +88,7 @@ function Booking() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const validationErrors = validate();
@@ -91,10 +98,48 @@ function Booking() {
       return;
     }
 
-    // Navigate to Booking Summary Page
-    navigate("/booking-summary", {
-      state: booking,
-    });
+    try {
+      const bookingData = {
+        customer_name: booking.fullName,
+        room_number: room.roomNumber,
+        check_in: booking.checkIn,
+        check_out: booking.checkOut,
+        guests: Number(booking.guests),
+      };
+
+      console.log("Booking Request:", bookingData);
+
+      const response = await createBooking(bookingData);
+
+      console.log("Booking Success:", response);
+
+      alert("Booking Successful");
+
+      navigate("/booking-summary", {
+        state: {
+          booking: response,
+          room,
+        },
+      });
+
+    } catch (error) {
+
+      console.error("Booking Error:", error);
+
+      if (error.response) {
+        console.log("Status Code:", error.response.status);
+        console.log("Response Data:", error.response.data);
+
+        alert(
+          error.response.data.detail ||
+          JSON.stringify(error.response.data)
+        );
+      } else if (error.request) {
+        alert("No response received from server.");
+      } else {
+        alert(error.message);
+      }
+    }
   };
 
   return (

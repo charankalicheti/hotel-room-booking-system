@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./BookingSuccess.css";
 
 function BookingSuccess() {
+  const { state } = useLocation();
+  const booking = state?.booking;
   return (
     <div className="success-container">
       <div className="success-card">
@@ -19,18 +21,18 @@ function BookingSuccess() {
         </p>
 
         <h3>
-          Booking ID: <span>#HB10245</span>
+          Booking ID: <span>#{booking?.id}</span>
         </h3>
 
         <div className="success-buttons">
 
-          <Link to="/">
+          <Link to="/customer-dashboard">
             <button className="home-btn">
-              Go to Home
+              Go to Dashboard
             </button>
           </Link>
 
-          <Link to="/my-bookings">
+          <Link to="/customer-dashboard">
             <button className="booking-btn">
               View My Bookings
             </button>
@@ -42,5 +44,7 @@ function BookingSuccess() {
     </div>
   );
 }
+
+
 
 export default BookingSuccess;

@@ -9,11 +9,13 @@ function HotelCard({
 }) {
   return (
     <div className="hotel-card">
-      <img
-        src={image}
-        alt={name}
-        className="hotel-image"
-      />
+      {image && (
+        <img
+          src={image}
+          alt={name}
+          className="hotel-image"
+        />
+      )}
 
       <div className="hotel-content">
         <h3>{name}</h3>

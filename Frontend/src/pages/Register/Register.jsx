@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
+import { registerUser } from "../../services/authService";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     fullName: "",
     email: "",
     phone: "",
     password: "",
-    role: "customer",
   });
 
   const [errors, setErrors] = useState({});
@@ -42,21 +44,30 @@ function Register() {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    // Role
-    if (!form.role) {
-      newErrors.role = "Please select a role";
-    }
-
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validate()) {
-      alert("Registration Successful (Mock)");
+    if (!validate()) return;
+
+    try {
+      await registerUser({
+        name: form.fullName,
+        email: form.email,
+        phone: form.phone,
+        password: form.password,
+        role: "customer",
+      });
+
+      alert("Registration Successful");
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+      alert("Registration Failed");
     }
   };
 
@@ -134,24 +145,6 @@ function Register() {
 
             {errors.password && (
               <small className="error">{errors.password}</small>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Role</label>
-
-            <select
-              value={form.role}
-              onChange={(e) =>
-                setForm({ ...form, role: e.target.value })
-              }
-            >
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
-            </select>
-
-            {errors.role && (
-              <small className="error">{errors.role}</small>
             )}
           </div>
 

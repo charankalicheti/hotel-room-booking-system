@@ -1,18 +1,25 @@
-import { useState, useRef } from "react";
-import "./AdminDashboard.css";
 
+import "./AdminDashboard.css";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+import {
+  getRooms,
+  addRoom,
+  updateRoom,
+  deleteRoom as deleteRoomApi,
+} from "../../services/roomService";
 function AdminDashboard() {
 
   const stats = [
+    
     {
-      title: "Total Hotels",
-      value: 25,
+      title: "Hotel",
+      value: 1,
       icon: "🏨",
-    },
-    {
-      title: "Total Rooms",
-      value: 120,
-      icon: "🛏️",
+
+
     },
     {
       title: "Total Bookings",
@@ -26,123 +33,42 @@ function AdminDashboard() {
     },
   ];
 
-  const [hotels, setHotels] = useState([
-    {
-      id: 1,
-      name: "Taj Hotel",
-      location: "Hyderabad",
-      rating: "5 ⭐",
-      rooms: 120,
-    },
-    {
-      id: 2,
-      name: "Novotel",
-      location: "Bangalore",
-      rating: "4 ⭐",
-      rooms: 95,
-    },
-    {
-      id: 3,
-      name: "ITC Grand",
-      location: "Chennai",
-      rating: "5 ⭐",
-      rooms: 150,
-    },
-    {
-      id: 4,
-      name: "Radisson Blu",
-      location: "Mumbai",
-      rating: "4 ⭐",
-      rooms: 110,
-    },
-  ]);
-
-  const [hotelForm, setHotelForm] = useState({
-    name: "",
-    location: "",
-    rating: "",
-    rooms: "",
+  const [hotel, setHotel] = useState({
+    id: 1,
+    name: "Taj Hotel",
+    location: "Hyderabad",
+    rating: "5 ⭐",
+    rooms: 120,
   });
-  const [rooms, setRooms] = useState([
-    {
-      id: 1,
-      hotel: "Taj Hotel",
-      roomNumber: "101",
-      type: "Deluxe",
-      price: 4500,
-      status: "Available",
-    },
-    {
-      id: 2,
-      hotel: "Novotel",
-      roomNumber: "205",
-      type: "Suite",
-      price: 6500,
-      status: "Booked",
-    },
-    {
-      id: 3,
-      hotel: "ITC Grand",
-      roomNumber: "310",
-      type: "Standard",
-      price: 3000,
-      status: "Available",
-    },
-  ]);
-  const [bookings] = useState([
-    {
-      id: "HB10245",
-      customer: "Sravani",
-      hotel: "Taj Hotel",
-      room: "Deluxe",
-      checkIn: "10-Jul-2026",
-      checkOut: "12-Jul-2026",
-      status: "Confirmed",
-    },
-    {
-      id: "HB10246",
-      customer: "Rahul",
-      hotel: "Novotel",
-      room: "Suite",
-      checkIn: "18-Jul-2026",
-      checkOut: "20-Jul-2026",
-      status: "Upcoming",
-    },
-    {
-      id: "HB10247",
-      customer: "Anjali",
-      hotel: "ITC Grand",
-      room: "Standard",
-      checkIn: "02-Jun-2026",
-      checkOut: "05-Jun-2026",
-      status: "Completed",
-    },
-    {
-      id: "HB10248",
-      customer: "Kiran",
-      hotel: "Radisson Blu",
-      room: "Suite",
-      checkIn: "12-May-2026",
-      checkOut: "14-May-2026",
-      status: "Cancelled",
-    },
-  ]);
-  const dashboardRef = useRef(null);
-  const hotelsRef = useRef(null);
-  const roomsRef = useRef(null);
-  const bookingsRef = useRef(null);
-  const customersRef = useRef(null);
+  const [hotelForm, setHotelForm] = useState({
+    name: "Taj Hotel",
+    location: "Hyderabad",
+    rating: "5 ⭐",
+    rooms: 120,
+  });
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  
+  const [rooms, setRooms] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  
   const [roomForm, setRoomForm] = useState({
-    hotel: "",
+    hotel: "Taj Hotel",
     roomNumber: "",
     type: "",
     price: "",
+    capacity: "",
     status: "",
   });
 
   const [editRoomId, setEditRoomId] = useState(null);
+  const [activePage, setActivePage] = useState("dashboard");
+  useEffect(() => {
+  loadRooms();
+}, []);
 
-  const [editId, setEditId] = useState(null);
+  
 
   const handleChange = (e) => {
     setHotelForm({
@@ -163,76 +89,51 @@ function AdminDashboard() {
       return;
     }
 
-    if (editId !== null) {
-
-      setHotels(
-        hotels.map((hotel) =>
-          hotel.id === editId
-            ? {
-                ...hotel,
-                ...hotelForm,
-              }
-            : hotel
-        )
-      );
-
-      setEditId(null);
-
-    } else {
-
-      const newHotel = {
-        id: hotels.length + 1,
-        name: hotelForm.name,
-        location: hotelForm.location,
-        rating: hotelForm.rating,
-        rooms: Number(hotelForm.rooms),
-      };
-
-      setHotels([...hotels, newHotel]);
-
-    }
+    setHotel({
+      ...hotel,
+      ...hotelForm,
+      rooms: Number(hotelForm.rooms),
+    });
 
     setHotelForm({
-      name: "",
-      location: "",
-      rating: "",
-      rooms: "",
+      name: hotelForm.name,
+      location: hotelForm.location,
+      rating: hotelForm.rating,
+      rooms: hotelForm.rooms,
     });
 
   };
 
-  const editHotel = (hotel) => {
+  
 
-    setHotelForm({
-      name: hotel.name,
-      location: hotel.location,
-      rating: hotel.rating,
-      rooms: hotel.rooms,
-    });
-
-    setEditId(hotel.id);
-
-  };
-
-  const deleteHotel = (id) => {
-
-    if (window.confirm("Delete this hotel?")) {
-
-      setHotels(
-        hotels.filter((hotel) => hotel.id !== id)
-      );
-
-    }
-
-  };
+  
   const handleRoomChange = (e) => {
     setRoomForm({
       ...roomForm,
       [e.target.name]: e.target.value,
     });
   };
+  
+  const loadRooms = async () => {
+    try {
+      const data = await getRooms();
 
-  const handleRoomSubmit = () => {
+      const formattedRooms = data.map((room) => ({
+        id: room.id,
+        hotel: hotel.name,
+        roomNumber: room.room_number,
+        type: room.room_type,
+        price: room.price,
+        status: room.is_available ? "Available" : "Booked",
+      }));
+
+      setRooms(formattedRooms);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleRoomSubmit = async () => {
 
     if (
       roomForm.hotel === "" ||
@@ -244,37 +145,31 @@ function AdminDashboard() {
       alert("Please fill all fields");
       return;
     }
+    const roomData = {
+      room_number: roomForm.roomNumber,
+      room_type: roomForm.type,
+      price: Number(roomForm.price),
+      capacity: Number(roomForm.capacity),
+      description: roomForm.status,
+      is_available: roomForm.status === "Available",
+    };
 
     if (editRoomId !== null) {
 
-      setRooms(
-        rooms.map((room) =>
-          room.id === editRoomId
-            ? { ...room, ...roomForm }
-            : room
-        )
-      );
+      await updateRoom(editRoomId, roomData);
+      await loadRooms();
 
       setEditRoomId(null);
 
     } else {
 
-      setRooms([
-        ...rooms,
-        {
-          id: rooms.length + 1,
-          hotel: roomForm.hotel,
-          roomNumber: roomForm.roomNumber,
-          type: roomForm.type,
-          price: Number(roomForm.price),
-          status: roomForm.status,
-        },
-      ]);
+      await addRoom(roomData);
+      await loadRooms();
 
     }
 
     setRoomForm({
-      hotel: "",
+      hotel: "Taj Hotel",
       roomNumber: "",
       type: "",
       price: "",
@@ -282,6 +177,7 @@ function AdminDashboard() {
     });
 
   };
+ 
 
   const editRoom = (room) => {
 
@@ -297,13 +193,12 @@ function AdminDashboard() {
 
   };
 
-  const deleteRoom = (id) => {
+  const deleteRoom = async (id) => {
 
     if (window.confirm("Delete this room?")) {
 
-      setRooms(
-        rooms.filter((room) => room.id !== id)
-      );
+      await deleteRoomApi(id);
+      await loadRooms();
       if (editRoomId === id) {
         setEditRoomId(null);
       }
@@ -311,11 +206,11 @@ function AdminDashboard() {
     }
 
   };
-  const scrollToSection = (ref) => {
-    ref.current?.scrollIntoView({
-      behavior: "smooth",
-    });
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
+  
   return (
     <div className="admin-dashboard">
 
@@ -327,38 +222,27 @@ function AdminDashboard() {
 
         <ul>
 
-          <li
-            className="active"
-            onClick={() => scrollToSection(dashboardRef)}
-          >
+          <li onClick={() => setActivePage("dashboard")}>
             Dashboard
           </li>
 
-          <li
-            onClick={() => scrollToSection(hotelsRef)}
-          >
-            Manage Hotels
+          <li onClick={() => setActivePage("hotel")}>
+            Manage Hotel
           </li>
 
-          <li
-            onClick={() => scrollToSection(roomsRef)}
-          >
+          <li onClick={() => setActivePage("rooms")}>
             Manage Rooms
           </li>
 
-          <li
-            onClick={() => scrollToSection(bookingsRef)}
-          >
+          <li onClick={() => setActivePage("bookings")}>
             Bookings
           </li>
 
-          <li
-            onClick={() => scrollToSection(customersRef)}
-          >
+          <li onClick={() => setActivePage("customers")}>
             Customers
           </li>
 
-          <li>
+          <li onClick={handleLogout}>
             Logout
           </li>
 
@@ -368,22 +252,21 @@ function AdminDashboard() {
 
       {/* Main Content */}
 
-      <main
-        className="admin-content"
-        ref={dashboardRef}
-      >
+      <main className="admin-content">
 
         <h1>Welcome Admin 👋</h1>
+        {activePage === "dashboard" && (
+          <>
 
-        <p>
-          Manage hotels, rooms and bookings from one place.
-        </p>
+          <p>
+            Manage your hotel, rooms and bookings from one place.
+          </p>
 
-        {/* Statistics Cards */}
+          {/* Statistics Cards */}
 
-        <div className="admin-stats">
+          <div className="admin-stats">
 
-          {stats.map((item, index) => (
+            {stats.map((item, index) => (
 
             <div
               className="admin-stat-card"
@@ -405,6 +288,7 @@ function AdminDashboard() {
         </div>
 
         {/* Welcome Card */}
+        
 
         <div className="admin-card">
 
@@ -415,7 +299,7 @@ function AdminDashboard() {
           </p>
 
           <ul>
-            <li>✔ Manage Hotels</li>
+            <li>✔ Manage Hotel</li>
             <li>✔ Manage Rooms</li>
             <li>✔ View All Bookings</li>
             <li>✔ Manage Customers</li>
@@ -423,61 +307,72 @@ function AdminDashboard() {
           </ul>
 
         </div>
+        </>
+        )}
 
         {/* Add / Edit Hotel */}
+        {activePage === "hotel" && (
+         <>
+          <div className="hotel-form">
 
-        <div className="hotel-form">
+            <h2>
+              Edit Hotel
+            </h2>
 
-          <h2>
-            {editId ? "Edit Hotel" : "Add Hotel"}
-          </h2>
+            
+            <input
+              type="text"
+              name="name"
+              placeholder="Hotel Name"
+              value={hotelForm.name}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="location"
+              placeholder="Location"
+              value={hotelForm.location}
+              onChange={handleChange}
+            />
+            
 
-          <input
-            type="text"
-            name="name"
-            placeholder="Hotel Name"
-            value={hotelForm.name}
-            onChange={handleChange}
-          />
+            <input
+              type="text"
+              name="rating"
+              placeholder="Rating (Example: 5 ⭐)"
+              value={hotelForm.rating}
+              onChange={handleChange}
+            />
 
-          <input
-            type="text"
-            name="location"
-            placeholder="Location"
-            value={hotelForm.location}
-            onChange={handleChange}
-          />
+            <input
+              type="number"
+              name="rooms"
+              placeholder="Rooms"
+              value={hotelForm.rooms}
+              onChange={handleChange}
+            />
+            
 
-          <input
-            type="text"
-            name="rating"
-            placeholder="Rating (Example: 5 ⭐)"
-            value={hotelForm.rating}
-            onChange={handleChange}
-          />
+            
+            
 
-          <input
-            type="number"
-            name="rooms"
-            placeholder="Rooms"
-            value={hotelForm.rooms}
-            onChange={handleChange}
-          />
 
-          <button onClick={handleSubmit}>
-            {editId ? "Update Hotel" : "Add Hotel"}
-          </button>
+            <button onClick={handleSubmit}>
+              Update Hotel
+            </button>
 
-        </div>
+          </div>
+        
 
-        {/* Manage Hotels */}
 
-        <div
-          className="manage-hotels"
-          ref={hotelsRef}
-        >
 
-          <h2>Manage Hotels</h2>
+        {/* Manage Hotel */}
+
+        <div className="manage-hotel">
+          
+        
+
+          <h2>Manage Hotel</h2>
 
           <table>
 
@@ -496,163 +391,156 @@ function AdminDashboard() {
 
             <tbody>
 
-              {hotels.map((hotel) => (
-
-                <tr key={hotel.id}>
-
-                  <td>{hotel.id}</td>
-                  <td>{hotel.name}</td>
-                  <td>{hotel.location}</td>
-                  <td>{hotel.rating}</td>
-                  <td>{hotel.rooms}</td>
-
-                  <td>
-
-                    <button
-                      className="edit-btn"
-                      onClick={() => editHotel(hotel)}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="delete-btn"
-                      onClick={() => deleteHotel(hotel.id)}
-                    >
-                      Delete
-                    </button>
-
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
-
-        </div>
-        <div className="room-form">
-
-          <h2>
-            {editRoomId ? "Edit Room" : "Add Room"}
-          </h2>
-
-          <input
-            type="text"
-            name="hotel"
-            placeholder="Hotel Name"
-            value={roomForm.hotel}
-            onChange={handleRoomChange}
-          />
-
-          <input
-            type="text"
-            name="roomNumber"
-            placeholder="Room Number"
-            value={roomForm.roomNumber}
-            onChange={handleRoomChange}
-          />
-
-          <input
-            type="text"
-            name="type"
-            placeholder="Room Type"
-            value={roomForm.type}
-            onChange={handleRoomChange}
-          />
-
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
-            value={roomForm.price}
-            onChange={handleRoomChange}
-          />
-
-          <input
-            type="text"
-            name="status"
-            placeholder="Available / Booked"
-            value={roomForm.status}
-            onChange={handleRoomChange}
-          />
-
-          <button onClick={handleRoomSubmit}>
-            {editRoomId ? "Update Room" : "Add Room"}
-          </button>
-
-        </div>
-        <div
-          className="manage-rooms"
-          ref={roomsRef}
-        >
-
-          <h2>Manage Rooms</h2>
-
-          <table>
-
-            <thead>
-
               <tr>
-                <th>ID</th>
-                <th>Hotel</th>
-                <th>Room No</th>
-                <th>Type</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <td>{hotel.id}</td>
+                <td>{hotel.name}</td>
+                <td>{hotel.location}</td>
+                <td>{hotel.rating}</td>
+                <td>{hotel.rooms}</td>
+
+                
+                <td>Single Hotel</td>
+                
               </tr>
 
-            </thead>
-
-            <tbody>
-
-              {rooms.map((room) => (
-
-                <tr key={room.id}>
-
-                  <td>{room.id}</td>
-                  <td>{room.hotel}</td>
-                  <td>{room.roomNumber}</td>
-                  <td>{room.type}</td>
-                  <td>₹{room.price}</td>
-                  <td>{room.status}</td>
-
-                  <td>
-
-                    <button
-                      className="edit-btn"
-                      onClick={() => editRoom(room)}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="delete-btn"
-                      onClick={() => deleteRoom(room.id)}
-                    >
-                      Delete
-                    </button>
-
-                  </td>
-
-                </tr>
-
-              ))}
-
             </tbody>
 
           </table>
 
         </div>
-        {/* View All Bookings */}
+        </>
+        )}
+        {activePage === "rooms" && (
+         <>
+          <div className="room-form">
 
-        <div
-          className="manage-bookings"
-          ref={bookingsRef}
-        >
+            <h2>
+              {editRoomId ? "Edit Room" : "Add Room"}
+            </h2>
+
+            
+            <input
+              type="text"
+              value={hotel.name}
+              readOnly
+            />
+            <input
+              type="text"
+              name="roomNumber"
+              placeholder="Room Number"
+              value={roomForm.roomNumber}
+              onChange={handleRoomChange}
+            />
+
+            <input
+              type="text"
+              name="type"
+              placeholder="Room Type"
+              value={roomForm.type}
+              onChange={handleRoomChange}
+            />
+
+            <input
+              type="number"
+              name="price"
+              placeholder="Price"
+              value={roomForm.price}
+              onChange={handleRoomChange}
+            />
+            <input
+              type="number"
+              name="capacity"
+              placeholder="Capacity"
+              value={roomForm.capacity}
+              onChange={handleRoomChange}
+            />
+            <input
+              type="text"
+              name="status"
+              placeholder="Available / Booked"
+              value={roomForm.status}
+              onChange={handleRoomChange}
+            />
+            <button onClick={handleRoomSubmit}>
+              {editRoomId ? "Update Room" : "Add Room"}
+            </button>
+
+          </div>
+        
+          <div className="manage-rooms">
+
+            <h2>Manage Rooms</h2>
+
+            <table>
+
+              <thead>
+
+                <tr>
+                  <th>ID</th>
+                  <th>Hotel</th>
+                  <th>Room No</th>
+                  <th>Type</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {rooms.map((room) => (
+
+                  <tr key={room.id}>
+
+                    <td>{room.id}</td>
+                    <td>{room.hotel}</td>
+                    <td>{room.roomNumber}</td>
+                    <td>{room.type}</td>
+                    <td>₹{room.price}</td>
+                    <td>{room.status}</td>
+
+                    <td>
+
+                      <button
+                        className="edit-btn"
+                        onClick={() => editRoom(room)}
+                      >
+                        Edit
+                      </button>
+
+                      {room.status === "Available" ? (
+                        <button
+                          className="delete-btn"
+                          onClick={() => deleteRoom(room.id)}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        <button
+                          className="delete-btn"
+                          disabled
+                        >
+                          Cannot Delete
+                        </button>
+                      )}
+
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
+          </>
+          )}
+        {/* View All Bookings */}
+        {activePage === "bookings" && (
+        <div className="manage-bookings">
 
           <h2>View All Bookings</h2>
 
@@ -712,11 +600,9 @@ function AdminDashboard() {
           </table>
 
         </div>
-
-        <div
-          className="manage-customers"
-          ref={customersRef}
-        >
+        )}
+        {activePage === "customers" && (
+        <div className="manage-customers">
 
           <h2>Customers</h2>
 
@@ -725,6 +611,7 @@ function AdminDashboard() {
           </p>
 
         </div>
+        )}
       </main>
 
     </div>
