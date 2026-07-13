@@ -41,12 +41,13 @@ def register_user(request: RegisterRequest, db: Session):
         )
     else:
         new_user = Customer(
-            name=request.name,
-            email=request.email,
-            phone=request.phone,
-            password=hash_password(request.password),
-            role="customer"
-        )
+        name=request.name,
+        email=request.email,
+        phone=request.phone,
+        address=request.address,
+        password=hash_password(request.password),
+        role="customer"
+    )
 
     db.add(new_user)
     db.commit()

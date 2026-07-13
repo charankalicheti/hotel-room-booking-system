@@ -6,6 +6,7 @@ class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
     phone: Optional[str] = None
+    address: Optional[str] = None
     password: str
     role: str = "customer"
 
@@ -15,11 +16,14 @@ class LoginRequest(BaseModel):
     password: str
 
 
+
+
 class CustomerResponse(BaseModel):
     id: int
     name: str
     email: EmailStr
-    phone: Optional[str]
+    phone: Optional[str] = None
+    address: Optional[str] = None
     role: str
 
     class Config:

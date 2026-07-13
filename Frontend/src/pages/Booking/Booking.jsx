@@ -6,23 +6,31 @@ import "./Booking.css";
 function Booking() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const room = state?.room;
 
-if (!room) {
-  return <h2>No Room Selected</h2>;
-}
+  const room = state?.room;
+  const selectedCheckIn = state?.checkIn || "";
+  const selectedCheckOut = state?.checkOut || "";
+  const selectedGuests = state?.guests || 1;
+
+  const user = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
 
   const [booking, setBooking] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    checkIn: "",
-    checkOut: "",
-    guests: "1",
+    fullName: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    checkIn: selectedCheckIn,
+    checkOut: selectedCheckOut,
+    guests: String(selectedGuests),
     specialRequest: "",
   });
 
   const [errors, setErrors] = useState({});
+
+  if (!room) {
+    return <h2>No Room Selected</h2>;
+  }
 
   const handleChange = (e) => {
     setBooking({
@@ -37,40 +45,36 @@ if (!room) {
   };
 
   const validate = () => {
-    let newErrors = {};
+    const newErrors = {};
 
-    // Full Name
     if (!booking.fullName.trim()) {
       newErrors.fullName = "Full Name is required";
     }
 
-    // Email
     if (!booking.email.trim()) {
       newErrors.email = "Email is required";
     } else if (
-      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(booking.email)
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
+        booking.email
+      )
     ) {
       newErrors.email = "Enter a valid email";
     }
 
-    // Phone Number
     if (!booking.phone.trim()) {
       newErrors.phone = "Phone Number is required";
     } else if (!/^[0-9]{10}$/.test(booking.phone)) {
       newErrors.phone = "Phone Number must be 10 digits";
     }
 
-    // Check-In
     if (!booking.checkIn) {
-      newErrors.checkIn = "Select Check-In Date";
+      newErrors.checkIn = "Check-In Date is required";
     }
 
-    // Check-Out
     if (!booking.checkOut) {
-      newErrors.checkOut = "Select Check-Out Date";
+      newErrors.checkOut = "Check-Out Date is required";
     }
 
-    // Date Validation
     if (
       booking.checkIn &&
       booking.checkOut &&
@@ -80,9 +84,13 @@ if (!room) {
         "Check-Out must be after Check-In";
     }
 
-    // Guests
     if (!booking.guests) {
       newErrors.guests = "Select number of guests";
+    }
+
+    if (Number(booking.guests) > Number(room.capacity)) {
+      newErrors.guests =
+        `Maximum ${room.capacity} guests allowed for this room`;
     }
 
     return newErrors;
@@ -111,34 +119,27 @@ if (!room) {
 
       const response = await createBooking(bookingData);
 
-      console.log("Booking Success:", response);
-
-      alert("Booking Successful");
+      console.log("Booking Created:", response);
 
       navigate("/booking-summary", {
         state: {
           booking: response,
           room,
+          customerDetails: {
+            fullName: booking.fullName,
+            email: booking.email,
+            phone: booking.phone,
+            specialRequest: booking.specialRequest,
+          },
         },
       });
-
     } catch (error) {
-
       console.error("Booking Error:", error);
 
-      if (error.response) {
-        console.log("Status Code:", error.response.status);
-        console.log("Response Data:", error.response.data);
-
-        alert(
-          error.response.data.detail ||
-          JSON.stringify(error.response.data)
-        );
-      } else if (error.request) {
-        alert("No response received from server.");
-      } else {
-        alert(error.message);
-      }
+      alert(
+        error.response?.data?.detail ||
+          "Unable to create booking."
+      );
     }
   };
 
@@ -148,7 +149,7 @@ if (!room) {
 
         <h1>Book Your Stay</h1>
 
-        <p>Please fill in your booking details.</p>
+        <p>Please review your booking details.</p>
 
         <form onSubmit={handleSubmit}>
 
@@ -156,44 +157,32 @@ if (!room) {
           <input
             type="text"
             name="fullName"
-            placeholder="Enter your full name"
             value={booking.fullName}
-            onChange={handleChange}
+            readOnly
           />
-          {errors.fullName && (
-            <p className="error">{errors.fullName}</p>
-          )}
 
           <label>Email</label>
           <input
             type="email"
             name="email"
-            placeholder="Enter your email"
             value={booking.email}
-            onChange={handleChange}
+            readOnly
           />
-          {errors.email && (
-            <p className="error">{errors.email}</p>
-          )}
 
           <label>Phone Number</label>
           <input
             type="tel"
             name="phone"
-            placeholder="Enter your phone number"
             value={booking.phone}
-            onChange={handleChange}
+            readOnly
           />
-          {errors.phone && (
-            <p className="error">{errors.phone}</p>
-          )}
 
           <label>Check-In Date</label>
           <input
             type="date"
             name="checkIn"
             value={booking.checkIn}
-            onChange={handleChange}
+            readOnly
           />
           {errors.checkIn && (
             <p className="error">{errors.checkIn}</p>
@@ -204,7 +193,7 @@ if (!room) {
             type="date"
             name="checkOut"
             value={booking.checkOut}
-            onChange={handleChange}
+            readOnly
           />
           {errors.checkOut && (
             <p className="error">{errors.checkOut}</p>
@@ -214,15 +203,15 @@ if (!room) {
           <select
             name="guests"
             value={booking.guests}
-            onChange={handleChange}
+            disabled
           >
-            <option value="">Select Guests</option>
             <option value="1">1 Guest</option>
             <option value="2">2 Guests</option>
             <option value="3">3 Guests</option>
             <option value="4">4 Guests</option>
             <option value="5">5 Guests</option>
           </select>
+
           {errors.guests && (
             <p className="error">{errors.guests}</p>
           )}

@@ -10,6 +10,7 @@ function Register() {
     fullName: "",
     email: "",
     phone: "",
+    address: "",
     password: "",
   });
 
@@ -37,6 +38,11 @@ function Register() {
       newErrors.phone = "Phone Number must be 10 digits";
     }
 
+    // Address
+    if (!form.address.trim()) {
+      newErrors.address = "Address is required";
+    }
+
     // Password
     if (!form.password) {
       newErrors.password = "Password is required";
@@ -59,6 +65,7 @@ function Register() {
         name: form.fullName,
         email: form.email,
         phone: form.phone,
+        address: form.address,
         password: form.password,
         role: "customer",
       });
@@ -80,6 +87,7 @@ function Register() {
 
         <form onSubmit={handleSubmit}>
 
+          {/* Full Name */}
           <div className="form-group">
             <label>Full Name</label>
 
@@ -97,6 +105,7 @@ function Register() {
             )}
           </div>
 
+          {/* Email */}
           <div className="form-group">
             <label>Email</label>
 
@@ -114,6 +123,7 @@ function Register() {
             )}
           </div>
 
+          {/* Phone */}
           <div className="form-group">
             <label>Phone Number</label>
 
@@ -131,6 +141,27 @@ function Register() {
             )}
           </div>
 
+          {/* Address */}
+          <div className="form-group">
+            <label>Address</label>
+
+            <textarea
+              rows="4"
+              placeholder="House No, Street, Area, City, State, Pincode"
+              value={form.address}
+              onChange={(e) =>
+                setForm({ ...form, address: e.target.value })
+              }
+            />
+
+            {errors.address && (
+              <small className="error">
+                {errors.address}
+              </small>
+            )}
+          </div>
+
+          {/* Password */}
           <div className="form-group">
             <label>Password</label>
 

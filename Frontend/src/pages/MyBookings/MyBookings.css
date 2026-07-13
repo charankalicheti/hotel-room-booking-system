@@ -80,3 +80,108 @@
     background:#9ca3af;
     cursor:not-allowed;
 }
+.pay-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pay-btn:hover {
+  background: #15803d;
+}
+.status.expired {
+  background: #dc2626;
+  color: white;
+}
+
+.status.pending {
+  background: #f59e0b;
+  color: white;
+}
+
+.status.booked {
+  background: #16a34a;
+  color: white;
+}
+
+.expired-message {
+  margin-top: 12px;
+  padding: 10px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.paid-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: not-allowed;
+}
+/* =====================================================
+   Booking Tabs
+===================================================== */
+
+.booking-tabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  margin: 20px 0 30px;
+}
+
+.booking-tabs .tab-btn {
+  width: auto !important;
+  min-width: 150px;
+
+  margin: 0 !important;
+  padding: 12px 24px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.booking-tabs .tab-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.booking-tabs .active-tab {
+  background: #1e3a8a;
+}
+
+
+/* =====================================================
+   Responsive Tabs
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .booking-tabs {
+    flex-wrap: wrap;
+  }
+
+  .booking-tabs .tab-btn {
+    min-width: 130px;
+  }
+
+}

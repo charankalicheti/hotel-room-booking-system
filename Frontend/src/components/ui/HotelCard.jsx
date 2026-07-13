@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import "./HotelCard.css";
 
 function HotelCard({
@@ -7,6 +8,8 @@ function HotelCard({
   price,
   rating,
 }) {
+  const navigate = useNavigate();
+
   return (
     <div className="hotel-card">
       {image && (
@@ -30,7 +33,7 @@ function HotelCard({
 
         <h4>₹ {price} / Night</h4>
 
-        <button>
+        <button onClick={() => navigate("/rooms")}>
           View Rooms
         </button>
       </div>

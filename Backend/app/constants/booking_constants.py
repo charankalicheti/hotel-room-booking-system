@@ -13,5 +13,7 @@ import enum
 # ==========================================================
 
 class BookingStatus(str, enum.Enum):
+    PENDING   = "PENDING"
     BOOKED    = "BOOKED"
     CANCELLED = "CANCELLED"
+    EXPIRED   = "EXPIRED"

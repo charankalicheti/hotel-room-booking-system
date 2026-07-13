@@ -82,3 +82,20 @@
     display:block;
     margin-top:5px;
 }
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:16px;
+    resize:vertical;
+    min-height:90px;
+    font-family:inherit;
+    box-sizing:border-box;
+}
+
+textarea:focus{
+    outline:none;
+    border-color:#2563eb;
+    box-shadow:0 0 5px rgba(37,99,235,.2);
+}

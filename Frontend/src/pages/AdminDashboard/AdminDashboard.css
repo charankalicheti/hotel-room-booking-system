@@ -144,7 +144,7 @@
 }
 /* Manage Hotels */
 
-.manage-hotels{
+.manage-hotel{
     margin-top:40px;
     background:white;
     padding:30px;
@@ -152,30 +152,30 @@
     box-shadow:0 5px 15px rgba(0,0,0,.1);
 }
 
-.manage-hotels h2{
+.manage-hotel h2{
     color:#2563eb;
     margin-bottom:20px;
     text-align:center;
 }
 
-.manage-hotels table{
+.manage-hotel table{
     width:100%;
     border-collapse:collapse;
 }
 
-.manage-hotels th,
-.manage-hotels td{
+.manage-hotel th,
+.manage-hotel td{
     padding:14px;
     text-align:center;
     border-bottom:1px solid #ddd;
 }
 
-.manage-hotels th{
+.manage-hotel th{
     background:#2563eb;
     color:white;
 }
 
-.manage-hotels tr:hover{
+.manage-hotel tr:hover{
     background:#f5f5f5;
 }
 .hotel-form{
@@ -358,14 +358,14 @@
 }
 .manage-rooms table,
 .manage-bookings table,
-.manage-hotels table{
+.manage-hotel table{
     border-radius:12px;
     overflow:hidden;
 }
 
 .manage-rooms tr:hover,
 .manage-bookings tr:hover,
-.manage-hotels tr:hover{
+.manage-hotel tr:hover{
     background:#f8fafc;
 }
 @media (max-width:768px){
@@ -391,4 +391,126 @@
     overflow-x:auto;
 }
 
+}
+
+
+.manage-customers{
+    margin-top:40px;
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    width:100%;
+}
+
+.manage-customers h2{
+    text-align:center;
+    color:#2563eb;
+    margin-bottom:20px;
+}
+
+.manage-customers table{
+    width:100%;
+    border-collapse:collapse;
+}
+.manage-customers th,
+.manage-customers td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+.manage-customers th {
+    background: #2563eb;
+    color: white;
+}
+
+.manage-customers td {
+    word-break: break-word;
+}
+
+.manage-customers table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:auto;
+}
+
+.manage-customers th,
+.manage-customers td{
+    padding:14px;
+    text-align:center;
+    border:1px solid #ddd;
+}
+.customer-table-container{
+    width:100%;
+    overflow-x:auto;
+}
+
+.customer-table-container table{
+    width:100%;
+    min-width:1000px;
+}
+/* =========================================================
+   Payment History
+========================================================= */
+
+.manage-payments {
+    margin-top: 40px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.manage-payments h2 {
+    text-align: center;
+    color: #2563eb;
+    margin-bottom: 25px;
+}
+
+.payment-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.manage-payments table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.manage-payments th,
+.manage-payments td {
+    padding: 14px 16px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+.manage-payments th {
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.manage-payments tbody tr:hover {
+    background: #f8fafc;
+}
+
+.payment-success {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #2563eb;
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.manage-payments table {
+    border-radius: 10px;
+    overflow: hidden;
 }

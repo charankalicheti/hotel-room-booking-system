@@ -1,11 +1,54 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../../context/AuthContext";
 import { getCustomerBookings } from "../../services/bookingService";
+
 import "./CustomerDashboard.css";
+
 import Rooms from "../Rooms/Rooms";
 import MyBookings from "../MyBookings/MyBookings";
+
+
 function CustomerDashboard() {
+
+  // =====================================================
+  // User
+  // =====================================================
+
+  const user = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
+
+
+  // =====================================================
+  // Navigation / Authentication
+  // =====================================================
+
+  const navigate = useNavigate();
+
+  const { logout } = useAuth();
+
+  const [activePage, setActivePage] = useState(
+    "dashboard"
+  );
+
+
+  // =====================================================
+  // Profile
+  // =====================================================
+
+  const [profile] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+  });
+
+
+  // =====================================================
+  // Statistics
+  // =====================================================
 
   const [stats, setStats] = useState([
     {
@@ -19,9 +62,9 @@ function CustomerDashboard() {
       icon: "📅",
     },
     {
-      title: "Completed",
+      title: "Pending",
       count: 0,
-      icon: "✅",
+      icon: "⏳",
     },
     {
       title: "Cancelled",
@@ -30,47 +73,59 @@ function CustomerDashboard() {
     },
   ]);
 
-  
-  const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  const [profile, setProfile] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
-    address: "",
-  });
+  // =====================================================
+  // Load Customer Bookings
+  // =====================================================
 
-  const [isEditing, setIsEditing] = useState(false);
- 
-  const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [activePage, setActivePage] = useState("dashboard");
-
-  const [upcomingBookings, setUpcomingBookings] = useState([]);
-  const [bookingHistory, setBookingHistory] = useState([]);
   useEffect(() => {
+
     if (user?.id) {
       loadBookings();
     }
+
   }, []);
 
+
   const loadBookings = async () => {
+
     try {
-      if (!user?.id) return;
-      const data = await getCustomerBookings(user.id);
+
+      if (!user?.id) {
+        return;
+      }
+
+      const data = await getCustomerBookings(
+        user.id
+      );
+
+
+      // Confirmed Bookings
 
       const upcoming = data.filter(
-        (booking) => booking.status === "BOOKED"
-      );
-
-      const history = data.filter(
         (booking) =>
-          booking.status === "COMPLETED" ||
-          booking.status === "CANCELLED"
+          booking.status === "BOOKED"
       );
 
-      setUpcomingBookings(upcoming);
-      setBookingHistory(history);
+
+      // Pending Payment
+
+      const pending = data.filter(
+        (booking) =>
+          booking.status === "PENDING"
+      );
+
+
+      // Cancelled / Expired
+
+      const cancelled = data.filter(
+        (booking) =>
+          booking.status === "CANCELLED" ||
+          booking.status === "EXPIRED"
+      );
+
+
+      // Update Statistics
 
       setStats([
         {
@@ -84,76 +139,97 @@ function CustomerDashboard() {
           icon: "📅",
         },
         {
-          title: "Completed",
-          count: history.filter(
-            (b) => b.status === "COMPLETED"
-          ).length,
-          icon: "✅",
+          title: "Pending",
+          count: pending.length,
+          icon: "⏳",
         },
         {
           title: "Cancelled",
-          count: history.filter(
-            (b) => b.status === "CANCELLED"
-          ).length,
+          count: cancelled.length,
           icon: "❌",
         },
       ]);
 
     } catch (error) {
-      console.error(error);
+
+      console.error(
+        "Unable to load booking statistics:",
+        error
+      );
+
     }
-  };
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-  const handleChange = (e) => {
-    setProfile({
-      ...profile,
-      [e.target.name]: e.target.value,
-    });
+
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    alert("Profile Updated Successfully!");
+
+  // =====================================================
+  // Logout
+  // =====================================================
+
+  const handleLogout = () => {
+
+    logout();
+
+    navigate("/login");
+
   };
-  
+
+
+  // =====================================================
+  // UI
+  // =====================================================
 
   return (
+
     <div className="dashboard-container">
 
-      {/* Sidebar */}
+
+      {/* =================================================
+          Sidebar
+      ================================================= */}
 
       <aside className="sidebar">
 
         <h2>🏨 Hotel Booking</h2>
 
+
         <ul>
 
-          <li onClick={() => setActivePage("dashboard")}>
+          <li
+            onClick={() =>
+              setActivePage("dashboard")
+            }
+          >
             Dashboard
           </li>
 
-          <li onClick={() => setActivePage("profile")}>
+
+          <li
+            onClick={() =>
+              setActivePage("profile")
+            }
+          >
             My Profile
           </li>
 
-          <li onClick={() => setActivePage("rooms")}>
+
+          <li
+            onClick={() =>
+              setActivePage("rooms")
+            }
+          >
             Browse Rooms
           </li>
 
-          <li onClick={() => setActivePage("upcoming")}>
-            Upcoming Bookings
-          </li>
 
-          <li onClick={() => setActivePage("bookings")}>
+          <li
+            onClick={() =>
+              setActivePage("bookings")
+            }
+          >
             My Bookings
           </li>
 
-          <li onClick={() => setActivePage("history")}>
-            Booking History
-          </li>
 
           <li onClick={handleLogout}>
             Logout
@@ -161,319 +237,205 @@ function CustomerDashboard() {
 
         </ul>
 
-
-
-
       </aside>
 
-      {/* Main Content */}
+
+      {/* =================================================
+          Main Content
+      ================================================= */}
 
       <main className="dashboard-content">
 
+
+        {/* =================================================
+            Dashboard
+        ================================================= */}
+
         {activePage === "dashboard" && (
-        <>
 
-          <h1>Welcome, {profile.name} 👋</h1>
+          <>
 
-          <p>
-            Manage your bookings and profile from your dashboard.
-          </p>
+            <h1>
+              Welcome, {profile.name} 👋
+            </h1>
 
-        {/* Statistics */}
 
-        <div
-          className="stats-grid"
-          
-        >
+            <p>
+              Manage your bookings and profile
+              from your dashboard.
+            </p>
 
-          {stats.map((item, index) => (
 
-            <div className="stat-card" key={index}>
+            {/* Statistics */}
 
-              <div className="stat-icon">
-                {item.icon}
-              </div>
+            <div className="stats-grid">
 
-              <h2>{item.count}</h2>
+              {stats.map((item, index) => (
 
-              <p>{item.title}</p>
-
-            </div>
-
-          ))}
-
-        </div>
-
-        {/* Welcome Card */}
-
-        <div className="welcome-card">
-
-          <h2>Customer Dashboard</h2>
-
-          <p>From here you can:</p>
-
-          <ul>
-            <li>✔ View your bookings</li>
-            <li>✔ Update your profile</li>
-            <li>✔ Check upcoming stays</li>
-            <li>✔ View booking history</li>
-          </ul>
-
-        </div>
-
-            </>
-          )}
-
-        {/* Profile Card */}
-
-        {activePage === "profile" && (
-
-        <div
-          className="profile-card"
-          
-        >
-
-          <h2>My Profile</h2>
-
-          <div className="profile-field">
-
-            <label>Full Name</label>
-
-            {isEditing ? (
-              <input
-                type="text"
-                name="name"
-                value={profile.name}
-                onChange={handleChange}
-              />
-            ) : (
-              <strong>{profile.name}</strong>
-            )}
-
-          </div>
-
-          <div className="profile-field">
-
-            <label>Email</label>
-
-            {isEditing ? (
-              <input
-                type="email"
-                name="email"
-                value={profile.email}
-                onChange={handleChange}
-              />
-            ) : (
-              <strong>{profile.email}</strong>
-            )}
-
-          </div>
-
-          <div className="profile-field">
-
-            <label>Phone Number</label>
-
-            {isEditing ? (
-              <input
-                type="text"
-                name="phone"
-                value={profile.phone}
-                onChange={handleChange}
-              />
-            ) : (
-              <strong>{profile.phone}</strong>
-            )}
-
-          </div>
-
-          <div className="profile-field">
-
-            <label>Address</label>
-
-            {isEditing ? (
-              <input
-                type="text"
-                name="address"
-                value={profile.address}
-                onChange={handleChange}
-              />
-            ) : (
-              <strong>{profile.address}</strong>
-            )}
-
-          </div>
-
-          {isEditing ? (
-            <button onClick={handleSave}>
-              Save Changes
-            </button>
-          ) : (
-            <button onClick={() => setIsEditing(true)}>
-              Edit Profile
-            </button>
-          )}
-
-        </div>
-
-        )}
-
-        {/* Browse Rooms */}
-
-        {activePage === "rooms" && (
-          <Rooms />
-        )}
-
-        {/* Upcoming Bookings */}
-
-        {activePage === "upcoming" && (
-
-        <div
-          className="upcoming-bookings"
-                  
+                <div
+                  className="stat-card"
+                  key={index}
                 >
 
-          <h2>Upcoming Bookings</h2>
+                  <div className="stat-icon">
+                    {item.icon}
+                  </div>
 
-          {upcomingBookings.length > 0 ? (
-            upcomingBookings.map((booking) => (
 
-              <div className="booking-card" key={booking.id}>
+                  <h2>
+                    {item.count}
+                  </h2>
 
-                <div className="booking-info">
-
-                  <h3>Hotel</h3>
-
-                  <p>
-                    <strong>Booking ID:</strong> {booking.id}
-                  </p>
 
                   <p>
-                    <strong>Room Number:</strong> {booking.room_number || booking.room_id}
+                    {item.title}
                   </p>
-
-                  <p>
-                    <strong>Check-In:</strong> {booking.check_in}
-                  </p>
-
-                  <p>
-                    <strong>Check-Out:</strong> {booking.check_out}
-                  </p>
-
-                  <span className="status">
-                    {booking.status}
-                  </span>
 
                 </div>
 
-                <button
-                  onClick={() =>
-                    navigate(`/booking-details/${booking.id}`)
-                  }
-                >
-                  View Details
-                </button>
-
-              </div>
-
-            ))
-          ) : (
-            <p>No Upcoming Bookings</p>
-          )}
-        </div>
-
-        )}
-
-        {/* My Bookings */}
-
-        {activePage === "bookings" && (
-          <MyBookings />
-        )}
-
-        {/* Booking History */}
-      {activePage === "history" && (
-
-      <div
-        className="booking-history"
-        
-      >
-
-        <h2>Booking History</h2>
-
-        {bookingHistory.length > 0 ? (
-          bookingHistory.map((booking) => (
-
-
-          <div className="history-card" key={booking.id}>
-
-            <div className="history-info">
-
-              <h3>{booking.hotel_name}</h3>
-
-              <p>
-                <strong>Booking ID:</strong> {booking.id}
-              </p>
-
-              <p>
-                <strong>Room:</strong> {booking.room_type}
-              </p>
-
-              <p>
-                <strong>Check-In:</strong> {booking.check_in}
-              </p>
-
-              <p>
-                <strong>Check-Out:</strong> {booking.check_out}
-              </p>
-
-              <span
-                className={
-                  booking.status === "COMPLETED"
-                    ? "completed-status"
-                    : "cancelled-status"
-                }
-              >
-                {booking.status}
-              </span>
+              ))}
 
             </div>
 
-            <button
-              onClick={() =>
-                navigate(`/booking-details/${booking.id}`)
-              }
-            >
-              Booking Details
-            </button>
 
-          </div>
+            {/* Welcome Card */}
 
-        ))
-        ) : (
-          <p>No Booking History</p>
+            <div className="welcome-card">
+
+              <h2>
+                Customer Dashboard
+              </h2>
+
+
+              <p>
+                From here you can:
+              </p>
+
+
+              <ul>
+
+                <li>
+                  ✔ Browse available rooms
+                </li>
+
+                <li>
+                  ✔ View all your bookings
+                </li>
+
+                <li>
+                  ✔ Complete pending payments
+                </li>
+
+                <li>
+                  ✔ View booking history
+                </li>
+
+              </ul>
+
+            </div>
+
+          </>
+
         )}
 
 
+        {/* =================================================
+            Profile
+        ================================================= */}
 
-      </div>
-      
-      )}
+        {activePage === "profile" && (
+
+          <div className="profile-card">
+
+            <h2>
+              My Profile
+            </h2>
+
+
+            <div className="profile-field">
+
+              <label>
+                Full Name
+              </label>
+
+              <strong>
+                {profile.name}
+              </strong>
+
+            </div>
+
+
+            <div className="profile-field">
+
+              <label>
+                Email
+              </label>
+
+              <strong>
+                {profile.email}
+              </strong>
+
+            </div>
+
+
+            <div className="profile-field">
+
+              <label>
+                Phone Number
+              </label>
+
+              <strong>
+                {profile.phone || "-"}
+              </strong>
+
+            </div>
+
+
+            <div className="profile-field">
+
+              <label>
+                Address
+              </label>
+
+              <strong>
+                {profile.address || "-"}
+              </strong>
+
+            </div>
+
+          </div>
+
+        )}
+
+
+        {/* =================================================
+            Browse Rooms
+        ================================================= */}
+
+        {activePage === "rooms" && (
+          <Rooms
+            fromCustomerDashboard={true}
+          />
+        )}
+
+
+        {/* =================================================
+            My Bookings
+        ================================================= */}
+
+        {activePage === "bookings" && (
+
+          <MyBookings />
+
+        )}
+
 
       </main>
 
     </div>
+
   );
+
 }
 
 export default CustomerDashboard;
-
-
-
-
-
-
-
-
-
-
-
-

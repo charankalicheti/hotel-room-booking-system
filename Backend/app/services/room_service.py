@@ -62,7 +62,16 @@ def update_room(room_id: int, request: RoomUpdate, db: Session):
 def delete_room(room_id: int, db: Session):
     room = get_room_by_id(room_id, db)
 
-    db.delete(room)
-    db.commit()
+    try:
+        db.delete(room)
+        db.commit()
 
-    return {"message": "Room deleted successfully"}
+        return {"message": "Room deleted successfully"}
+
+    except IntegrityError:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete room because it has existing reservations."
+        )

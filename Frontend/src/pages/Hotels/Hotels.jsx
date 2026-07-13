@@ -1,18 +1,18 @@
 import { useState } from "react";
 import "./Hotels.css";
 import HotelCard from "../../components/ui/HotelCard";
+import hotelImage from "../../assets/hero.png";
 
 function Hotels() {
   const [search, setSearch] = useState("");
 
   const hotel = {
     id: 1,
-    name: "Taj Hotel",
-    image:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600",
+    name: "Royal Hotel",
+    image: hotelImage,
     location: "Hyderabad",
     price: 5000,
-    rating: "⭐⭐⭐⭐⭐",
+    rating: "★★★★★",
   };
 
   const isMatch =
@@ -38,11 +38,11 @@ function Hotels() {
       <div className="hotel-grid">
         {isMatch ? (
           <HotelCard
-            name={hotel.name}
-            image={hotel.image}
-            location={hotel.location}
-            price={hotel.price}
-            rating={hotel.rating}
+            name="Royal Hotel"
+            image={hotelImage}
+            location="Hyderabad"
+            price="5000"
+            rating="★★★★★"
           />
         ) : (
           <h2>Hotel Not Found</h2>

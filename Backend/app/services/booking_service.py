@@ -20,6 +20,7 @@ from app.repositories.booking_repository import (
     create_booking,
     get_booking_by_id,
     get_booking_history,
+    get_all_bookings,
     cancel_booking,
     delete_booking,
     get_existing_reservation,
@@ -83,14 +84,14 @@ def create_new_booking(
 
     # 6. Build and persist reservation
     reservation = Reservation(
-        customer_id = customer.id,
-        customer_name = customer.name,
-        room_id     = room.id,
-        check_in    = request.check_in,
-        check_out   = request.check_out,
-        guests      = request.guests,
-        total_price = total_price,
-        status      = BookingStatus.BOOKED,
+        customer_id=customer.id,
+        customer_name=customer.name,
+        room_id=room.id,
+        check_in=request.check_in,
+        check_out=request.check_out,
+        guests=request.guests,
+        total_price=total_price,
+        status=BookingStatus.PENDING,
     )
 
     return create_booking(reservation, db)
@@ -131,6 +132,18 @@ def get_customer_booking_history(
     return get_booking_history(customer_id, db)
 
 
+
+# ==========================================================
+# Get All Bookings (Admin)
+# ==========================================================
+
+def get_all_bookings_admin(
+    db: Session,
+) -> list[Reservation]:
+    """
+    Return all bookings for Admin.
+    """
+    return get_all_bookings(db)
 # ==========================================================
 # Cancel Booking
 # ==========================================================

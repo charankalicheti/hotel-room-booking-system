@@ -9,6 +9,7 @@ from app.database import Base, engine
 from app.models.admin import Admin
 from app.models.customer import Customer
 from app.models.room import Room
+from app.models.hotel import Hotel
 
 # ==========================================================
 # Member 2 Models
@@ -40,11 +41,12 @@ app.add_middleware(
 # ==========================================================
 # Member 1 Routers
 # ==========================================================
-from app.routers import auth, admin
+from app.routers import auth, admin, customers, hotel
 
 app.include_router(auth.router)
 app.include_router(admin.router)
-
+app.include_router(customers.router)
+app.include_router(hotel.router)
 # ==========================================================
 # Member 2 Routers
 # ==========================================================

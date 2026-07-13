@@ -8,7 +8,7 @@ Hotel Room Booking System
 from sqlalchemy.orm import Session
 
 from app.models.payment import Payment
-
+from app.models.reservation import Reservation
 
 # ==========================================================
 # Create Payment
@@ -62,12 +62,16 @@ def get_payment_by_id(
 # Payment History
 # ==========================================================
 
-def get_payment_history(
-    db: Session,
-):
-
+def get_payment_history(db: Session):
     return (
-        db.query(Payment)
+        db.query(Payment, Reservation)
+        .join(
+            Reservation,
+            Payment.reservation_id == Reservation.id
+        )
         .order_by(Payment.created_at.desc())
         .all()
     )
+    
+
+   

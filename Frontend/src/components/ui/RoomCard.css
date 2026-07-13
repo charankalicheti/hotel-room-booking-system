@@ -1,57 +1,131 @@
-.room-card{
-    width:320px;
-    background:#fff;
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow:0 8px 20px rgba(0,0,0,.12);
-    transition:.3s;
+.room-card {
+  width: 320px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transition: 0.3s;
 }
 
-.room-card:hover{
-    transform:translateY(-8px);
+.room-card:hover {
+  transform: translateY(-8px);
 }
 
-.room-image{
-    width:100%;
-    height:220px;
-    object-fit:cover;
+.room-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
 }
 
-.room-content{
-    padding:20px;
+.room-content {
+  padding: 20px;
 }
 
-.room-content h3{
-    margin-bottom:10px;
-    font-size:22px;
+.room-content h3 {
+  margin-bottom: 10px;
+  font-size: 22px;
 }
 
-.capacity{
-    color:#444;
-    margin-bottom:8px;
+.capacity {
+  color: #444;
+  margin-bottom: 8px;
 }
 
-.amenities{
-    color:#666;
-    margin-bottom:15px;
+.amenities {
+  color: #666;
+  margin-bottom: 15px;
 }
 
-.room-content h4{
-    color:#2563eb;
-    margin-bottom:20px;
+.room-content h4 {
+  color: #2563eb;
+  margin-bottom: 15px;
 }
 
-.room-card button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    background:#2563eb;
-    color:white;
-    cursor:pointer;
-    font-size:16px;
+
+/* ==========================================================
+   Booked Dates
+========================================================== */
+
+.booked-dates-box {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 12px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
 }
 
-.room-card button:hover{
-    background:#1d4ed8;
+.booked-dates-box strong {
+  display: block;
+  color: #b91c1c;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.booked-dates-box p {
+  margin: 5px 0;
+  padding: 6px 8px;
+  background: #ffffff;
+  border-radius: 5px;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+
+/* ==========================================================
+   Available Badge
+========================================================== */
+
+.available-badge {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  background: #16a34a;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+
+/* ==========================================================
+   Book Now Button
+========================================================== */
+
+.book-now-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.book-now-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+.available {
+    color: #16a34a;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+.booked {
+    color: #dc2626;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+.book-now-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
 }

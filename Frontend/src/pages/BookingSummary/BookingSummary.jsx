@@ -5,34 +5,42 @@ function BookingSummary() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  if (!state || !state.booking) {
+  if (!state || !state.booking || !state.room) {
     return (
       <div className="summary-container">
         <div className="summary-card">
           <h2>No Booking Details Found</h2>
 
-          <button onClick={() => navigate("/booking")}>
-            Back to Booking
+          <button
+            onClick={() =>
+              navigate("/customer-dashboard")
+            }
+          >
+            Back to Dashboard
           </button>
         </div>
       </div>
     );
   }
 
-  const { booking, room } = state;
+  const {
+    booking,
+    room,
+    customerDetails,
+  } = state;
 
   const handleProceed = () => {
     navigate("/payment", {
       state: {
         booking,
         room,
+        customerDetails,
       },
     });
   };
 
   return (
     <div className="summary-container">
-
       <div className="summary-card">
 
         <h1>Booking Summary</h1>
@@ -45,6 +53,11 @@ function BookingSummary() {
         <div className="summary-row">
           <span>Room Number</span>
           <strong>{room.roomNumber}</strong>
+        </div>
+
+        <div className="summary-row">
+          <span>Room Type</span>
+          <strong>{room.type}</strong>
         </div>
 
         <div className="summary-row">
@@ -63,8 +76,18 @@ function BookingSummary() {
         </div>
 
         <div className="summary-row">
-          <span>Status</span>
-          <strong>{booking.status}</strong>
+          <span>Amount</span>
+          <strong>
+            ₹ {booking.total_price}
+          </strong>
+        </div>
+
+        <div className="summary-row">
+          <span>Booking Status</span>
+
+          <strong className="pending-status">
+            PENDING PAYMENT
+          </strong>
         </div>
 
         <button onClick={handleProceed}>
@@ -72,7 +95,6 @@ function BookingSummary() {
         </button>
 
       </div>
-
     </div>
   );
 }

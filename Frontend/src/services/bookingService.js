@@ -1,6 +1,10 @@
 import api from "./api";
 
+
+// ==========================================================
 // Create Booking
+// ==========================================================
+
 export const createBooking = async (bookingData) => {
   const response = await api.post(
     "/bookings",
@@ -10,7 +14,11 @@ export const createBooking = async (bookingData) => {
   return response.data;
 };
 
+
+// ==========================================================
 // Get Logged-in Customer Bookings
+// ==========================================================
+
 export const getCustomerBookings = async (customerId) => {
   const response = await api.get(
     `/bookings/${customerId}`
@@ -19,7 +27,11 @@ export const getCustomerBookings = async (customerId) => {
   return response.data;
 };
 
+
+// ==========================================================
 // Cancel Booking
+// ==========================================================
+
 export const cancelBooking = async (bookingId) => {
   const response = await api.put(
     `/bookings/${bookingId}/cancel`
@@ -28,7 +40,11 @@ export const cancelBooking = async (bookingId) => {
   return response.data;
 };
 
-// Delete Booking (Admin)
+
+// ==========================================================
+// Delete Booking - Admin
+// ==========================================================
+
 export const deleteBooking = async (bookingId) => {
   const response = await api.delete(
     `/bookings/${bookingId}`
@@ -36,10 +52,48 @@ export const deleteBooking = async (bookingId) => {
 
   return response.data;
 };
-export const getBookingById = async (customerId, bookingId) => {
-  const bookings = await getCustomerBookings(customerId);
+
+
+// ==========================================================
+// Get Booking By ID
+// ==========================================================
+
+export const getBookingById = async (
+  customerId,
+  bookingId
+) => {
+  const bookings = await getCustomerBookings(
+    customerId
+  );
 
   return bookings.find(
-    (booking) => booking.id === Number(bookingId)
+    (booking) =>
+      booking.id === Number(bookingId)
   );
+};
+
+
+// ==========================================================
+// Get All Bookings - Admin
+// ==========================================================
+
+export const getAllBookings = async () => {
+  const response = await api.get(
+    "/bookings"
+  );
+
+  return response.data;
+};
+
+
+// ==========================================================
+// Get Booked Dates For All Rooms
+// ==========================================================
+
+export const getRoomBookedDates = async () => {
+  const response = await api.get(
+    "/bookings/rooms/booked-dates"
+  );
+
+  return response.data;
 };

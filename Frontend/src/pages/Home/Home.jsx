@@ -1,67 +1,163 @@
+import { useEffect, useState } from "react";
 import Navbar from "../../components/layout/Navbar";
 import Footer from "../../components/layout/Footer";
-import HotelCard from "../../components/ui/HotelCard";
+import { getHotel } from "../../services/hotelService";
 import "./Home.css";
 
 function Home() {
+  // =====================================================
+  // Hotel State
+  // =====================================================
+
+  const [hotel, setHotel] = useState({
+    id: null,
+    name: "",
+    location: "",
+    rooms: 0,
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  // =====================================================
+  // Load Hotel Details
+  // =====================================================
+
+  useEffect(() => {
+    loadHotel();
+  }, []);
+
+  const loadHotel = async () => {
+    try {
+      const data = await getHotel();
+
+      console.log("Home Hotel Response:", data);
+
+      setHotel(data);
+    } catch (error) {
+      console.error(
+        "Failed to load hotel details:",
+        error
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // =====================================================
+  // Loading
+  // =====================================================
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+
+        <div
+          style={{
+            minHeight: "80vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <h2>Loading Hotel...</h2>
+        </div>
+
+        <Footer />
+      </>
+    );
+  }
+
+  // =====================================================
+  // UI
+  // =====================================================
+
   return (
     <>
       <Navbar />
 
-      {/* Hero Section */}
+      {/* =================================================
+          Hero Section
+      ================================================= */}
+
       <section className="hero">
-        <h1>Find Your Perfect Stay</h1>
+        <h1>
+          Welcome to {hotel.name}
+        </h1>
 
         <p>
-          Luxury rooms, comfortable stay, and the best prices for your next
-          trip.
+          Experience luxury, comfort, and unforgettable
+          hospitality in the heart of {hotel.location}.
         </p>
-
-        {/* Search Section */}
-        <div className="search-box">
-          <input type="text" placeholder="📍 Destination" />
-
-          <input type="date" />
-
-          <input type="date" />
-
-          <select>
-            <option>1 Guest</option>
-            <option>2 Guests</option>
-            <option>3 Guests</option>
-            <option>4 Guests</option>
-          </select>
-        </div>
-
-        <button>Explore Rooms</button>
       </section>
 
-      {/* Our Hotel */}
+      {/* =================================================
+          Our Hotel
+      ================================================= */}
+
       <section className="featured-hotels">
         <h2>Our Hotel</h2>
 
-        <div className="hotel-list">
-          <HotelCard
-            name="Royal Hotel"
-            location="Hyderabad"
-            price="5000"
-            rating="★★★★★"
+        <div className="hotel-banner">
+          <img
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200"
+            alt={hotel.name}
           />
+
+          <div className="hotel-info">
+            <h3>
+              {hotel.name}
+            </h3>
+
+            <p className="location">
+              📍 {hotel.location}
+            </p>
+
+            <p>
+              {hotel.name} offers luxurious rooms,
+              premium amenities, world-class hospitality,
+              and a comfortable stay for business and
+              leisure travelers.
+            </p>
+
+            <div className="hotel-features">
+              <span>✔ Free WiFi</span>
+
+              <span>✔ Swimming Pool</span>
+
+              <span>✔ Restaurant</span>
+
+              <span>✔ Free Parking</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
+      {/* =================================================
+          Why Choose Us
+      ================================================= */}
+
       <section className="why-us">
-        <h2>Why Choose Us</h2>
+        <h2>
+          Why Choose Us
+        </h2>
 
         <div className="features">
-          <div>✔ Best Price Guarantee</div>
+          <div>
+            ✔ Best Price Guarantee
+          </div>
 
-          <div>✔ Secure Booking</div>
+          <div>
+            ✔ Secure Booking
+          </div>
 
-          <div>✔ 24/7 Customer Support</div>
+          <div>
+            ✔ 24/7 Customer Support
+          </div>
 
-          <div>✔ Easy Cancellation</div>
+          <div>
+            ✔ Easy Cancellation
+          </div>
         </div>
       </section>
 

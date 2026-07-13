@@ -3,126 +3,309 @@
 =========================== */
 
 .hero {
+    width: 100%;
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #1e3a8a
+    );
+    color: white;
     text-align: center;
-    padding: 100px 20px;
-    background-color: #f8fafc;
+    padding: 65px 20px;
 }
 
 .hero h1 {
-    font-size: 52px;
-    color: #0f172a;
-    margin-bottom: 20px;
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 12px;
 }
 
 .hero p {
-    font-size: 22px;
-    color: #475569;
-    margin-bottom: 35px;
+    font-size: 20px;
+    max-width: 750px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: #e2e8f0;
 }
 
-/* ===========================
-   Search Section
-=========================== */
-
-.search-box {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-bottom: 40px;
-}
-
-.search-box input,
-.search-box select {
-    width: 220px;
-    padding: 15px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-.search-box input:focus,
-.search-box select:focus {
-    outline: none;
-    border-color: #2563eb;
-}
 
 /* ===========================
    Explore Button
 =========================== */
 
-.hero button {
-    background-color: #2563eb;
-    color: white;
+.hero .explore-btn {
+    display: inline-block;
+    width: auto;
+    min-width: 190px;
+
+    background: white;
+    color: #2563eb;
+
     border: none;
-    padding: 15px 35px;
-    font-size: 18px;
-    border-radius: 8px;
+    padding: 14px 35px;
+    margin-top: 25px;
+
+    border-radius: 10px;
+
+    font-size: 17px;
+    font-weight: bold;
+
     cursor: pointer;
     transition: 0.3s;
 }
 
-.hero button:hover {
-    background-color: #1d4ed8;
+.hero .explore-btn:hover {
+    background: #f1f5f9;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
+
 /* ===========================
-   Featured Hotels
+   Our Hotel Section
 =========================== */
 
 .featured-hotels {
-    padding: 80px 40px;
-    background-color: #f8fafc;
+    width: 100%;
+    padding: 50px 40px 70px;
+    background: #f8fafc;
 }
 
 .featured-hotels h2 {
     text-align: center;
-    font-size: 40px;
+    font-size: 38px;
     color: #0f172a;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 }
 
-.hotel-list {
+
+/* ===========================
+   Hotel Banner
+=========================== */
+
+.hotel-banner {
+    width: 90%;
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    background: #ffffff;
+
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow:
+        0 12px 30px
+        rgba(0, 0, 0, 0.15);
+}
+
+.hotel-banner img {
+    width: 100%;
+    height: 500px;
+
+    object-fit: cover;
+    display: block;
+}
+
+
+/* ===========================
+   Hotel Information
+=========================== */
+
+.hotel-info {
+    padding: 40px 60px;
+    text-align: center;
+}
+
+.hotel-info h3 {
+    font-size: 40px;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.hotel-info .location {
+    font-size: 19px;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+.hotel-info p {
+    max-width: 1000px;
+    margin: 0 auto;
+
+    font-size: 18px;
+    line-height: 1.7;
+
+    color: #475569;
+}
+
+
+/* ===========================
+   Hotel Features
+=========================== */
+
+.hotel-features {
     display: flex;
     justify-content: center;
-    gap: 30px;
+    align-items: center;
     flex-wrap: wrap;
+
+    gap: 18px;
+    margin-top: 30px;
 }
+
+.hotel-features span {
+    background: #eff6ff;
+    color: #2563eb;
+
+    padding: 12px 24px;
+
+    border-radius: 30px;
+
+    font-weight: 600;
+    font-size: 16px;
+}
+
 
 /* ===========================
    Why Choose Us
 =========================== */
 
 .why-us {
-    padding: 80px 20px;
+    width: 100%;
+
+    padding: 70px 40px;
+
     text-align: center;
-    background-color: #ffffff;
+
+    background: white;
 }
 
 .why-us h2 {
-    font-size: 40px;
+    font-size: 38px;
     color: #0f172a;
     margin-bottom: 40px;
 }
 
 .features {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-    max-width: 900px;
-    margin: auto;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 25px;
+
+    width: 90%;
+    max-width: 1400px;
+
+    margin: 0 auto;
 }
 
 .features div {
     background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
-    font-size: 20px;
-    font-weight: 500;
+
+    padding: 30px 20px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 8px 18px
+        rgba(0, 0, 0, 0.1);
+
+    font-size: 18px;
+    font-weight: 600;
+
     transition: 0.3s;
 }
 
 .features div:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+
+    box-shadow:
+        0 12px 25px
+        rgba(0, 0, 0, 0.15);
+}
+
+
+/* ===========================
+   Tablet Responsive
+=========================== */
+
+@media (max-width: 1024px) {
+
+    .hotel-banner {
+        width: 95%;
+    }
+
+    .features {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+}
+
+
+/* ===========================
+   Mobile Responsive
+=========================== */
+
+@media (max-width: 768px) {
+
+    .hero {
+        padding: 50px 20px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .hero p {
+        font-size: 17px;
+    }
+
+    .featured-hotels {
+        padding: 40px 15px;
+    }
+
+    .featured-hotels h2,
+    .why-us h2 {
+        font-size: 30px;
+    }
+
+    .hotel-banner {
+        width: 100%;
+    }
+
+    .hotel-banner img {
+        height: 300px;
+    }
+
+    .hotel-info {
+        padding: 30px 20px;
+    }
+
+    .hotel-info h3 {
+        font-size: 30px;
+    }
+
+    .hotel-info p {
+        font-size: 16px;
+    }
+
+    .hotel-features {
+        gap: 10px;
+    }
+
+    .hotel-features span {
+        font-size: 14px;
+        padding: 9px 15px;
+    }
+
+    .why-us {
+        padding: 50px 15px;
+    }
+
+    .features {
+        width: 100%;
+        grid-template-columns: 1fr;
+    }
 }

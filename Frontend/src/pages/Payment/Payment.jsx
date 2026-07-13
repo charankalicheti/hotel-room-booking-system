@@ -180,11 +180,11 @@ function Payment() {
           </div>
 
           <div className="amount-box">
-
             <span>Total Amount</span>
 
-            <h2>₹3500</h2>
-
+            <h2>
+              ₹{booking?.total_price || 0}
+            </h2>
           </div>
 
           <button type="submit">

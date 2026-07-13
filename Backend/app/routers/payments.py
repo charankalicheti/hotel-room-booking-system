@@ -23,7 +23,9 @@ from app.schemas.payment_schema import (
 from app.services.payment_service import (
     make_payment,
     get_payment,
+    get_all_payments as get_all_payments_service,
 )
+
 
 router = APIRouter(
     prefix="/payments",
@@ -55,6 +57,21 @@ def create_payment(
         message="Payment completed successfully.",
         payment=payment,
     )
+
+
+# ==========================================================
+# GET /payments
+# Admin - View All Payments
+# ==========================================================
+
+@router.get(
+    "",
+    summary="Get All Payments (Admin)",
+)
+def get_all_payments(
+    db: Session = Depends(get_db),
+):
+    return get_all_payments_service(db)
 
 
 # ==========================================================

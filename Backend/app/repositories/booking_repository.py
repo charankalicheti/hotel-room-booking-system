@@ -132,6 +132,21 @@ def get_booking_history(
     )
 
 
+# ==========================================================
+# Get All Bookings (Admin)
+# ==========================================================
+
+def get_all_bookings(
+    db: Session,
+) -> list[Reservation]:
+    """
+    Return all reservations, newest first.
+    """
+    return (
+        db.query(Reservation)
+        .order_by(Reservation.created_at.desc())
+        .all()
+    )
 def cancel_booking(
     booking: Reservation,
     db: Session,
