@@ -7,7 +7,7 @@ import {
   getCustomerBookings,
   cancelBooking,
 } from "../../services/bookingService";
-
+import { getRooms } from "../../services/roomService";
 
 function MyBookings() {
 
@@ -48,11 +48,57 @@ function MyBookings() {
 
     try {
 
-      const data = await getCustomerBookings(
-        user.id
+      const [
+        bookingsData,
+        roomsData,
+      ] = await Promise.all([
+
+        getCustomerBookings(user.id),
+
+        getRooms(),
+
+      ]);
+
+
+      const formattedBookings =
+        bookingsData.map((booking) => {
+
+
+          const room = roomsData.find(
+            (room) =>
+              Number(room.id) ===
+              Number(booking.room_id)
+          );
+
+
+          return {
+
+            ...booking,
+
+            room_number:
+              room?.room_number || "-",
+
+            room_type:
+              room?.room_type || "-",
+
+            guests:
+              booking.guests ||
+              room?.capacity ||
+              "-",
+
+          };
+
+        });
+
+
+      console.log(
+        "Formatted Bookings:",
+        formattedBookings
       );
 
-      setBookings(data);
+
+      setBookings(formattedBookings);
+
 
     } catch (error) {
 
@@ -61,7 +107,10 @@ function MyBookings() {
         error
       );
 
-      alert("Unable to load bookings.");
+
+      alert(
+        "Unable to load bookings."
+      );
 
     }
 
@@ -343,8 +392,7 @@ function MyBookings() {
                   Room:
                 </strong>{" "}
 
-                {booking.room_number ||
-                  booking.room_id}
+                {booking.room_number}
 
               </p>
 

@@ -1004,12 +1004,12 @@ function AdminDashboard() {
                 <tbody>
 
 
-                  {rooms.map((room) => (
+                  {rooms.map((room, index) => (
 
                     <tr key={room.id}>
 
                       <td>
-                        {room.id}
+                         <td>{index + 1}</td>
                       </td>
 
                       <td>
@@ -1106,7 +1106,7 @@ function AdminDashboard() {
 
                   <th>Hotel</th>
 
-                  <th>Room</th>
+                  <th>Room Number</th>
 
                   <th>Check-In</th>
 
@@ -1139,7 +1139,10 @@ function AdminDashboard() {
                     </td>
 
                     <td>
-                      {booking.room}
+                      {rooms.find(
+                        (room) =>
+                          Number(room.id) === Number(booking.room)
+                      )?.roomNumber || "-"}
                     </td>
 
                     <td>
@@ -1178,7 +1181,16 @@ function AdminDashboard() {
                 ))}
 
 
+
+
+
+
+
+
+
               </tbody>
+
+
 
             </table>
 
@@ -1213,7 +1225,7 @@ function AdminDashboard() {
 
                     <tr>
 
-                      <th>ID</th>
+                      <th>S.No</th>
 
                       <th>Name</th>
 
@@ -1300,7 +1312,7 @@ function AdminDashboard() {
 
                     <th>Customer</th>
 
-                    <th>Room</th>
+                    <th>Room Number</th>
 
                     <th>Check-In</th>
 
@@ -1333,7 +1345,13 @@ function AdminDashboard() {
                       </td>
 
                       <td>
-                        {payment.room_id}
+                        {
+                          rooms.find(
+                            (room) =>
+                              Number(room.id) ===
+                              Number(payment.room_id)
+                          )?.roomNumber || "-"
+                        }
                       </td>
 
                       <td>
@@ -1353,13 +1371,9 @@ function AdminDashboard() {
                       </td>
 
                       <td>
-
                         <span className="payment-success">
-
                           {payment.payment_status}
-
                         </span>
-
                       </td>
 
                     </tr>
