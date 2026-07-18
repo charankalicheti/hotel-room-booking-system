@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, Link as RouterLink, useLocation } from "react-router-dom";
 
 import {
   Box,
@@ -34,6 +34,9 @@ export default function Login() {
   const navigate = useNavigate();
 
   const { login } = useAuth();
+
+  const location = useLocation();
+  const from = location.state?.from?.pathname;
 
   const [loading, setLoading] = useState(false);
 
@@ -78,6 +81,12 @@ export default function Login() {
       login(response.access_token, response);
 
       toast.success("Login Successful");
+
+      if (from) {
+        // Return to the original requested page after login
+        navigate(from, { replace: true });
+        return;
+      }
 
       if (response.role === "admin") {
         navigate("/admin/dashboard");
