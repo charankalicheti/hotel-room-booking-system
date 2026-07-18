@@ -13,16 +13,30 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import (
+    get_current_user,
+    admin_required,
+)
+
+from app.models.customer import Customer
 
 from app.schemas.payment_schema import (
-    PaymentCreate,
+    CreatePaymentRequest,
     PaymentResponse,
-    PaymentSuccessResponse,
+    PaymentHistoryResponse,
+    PaymentDashboardResponse,
+    RefundResponse,
+    InvoiceResponse,
 )
 
 from app.services.payment_service import (
-    make_payment,
-    get_payment,
+    create_payment,
+    get_payment_by_reservation,
+    get_payment_history,
+    get_all_payment_history,
+    get_invoice,
+    payment_dashboard_summary,
+    refund_payment,
 )
 
 router = APIRouter(
@@ -32,46 +46,165 @@ router = APIRouter(
 
 
 # ==========================================================
-# POST /payments
+# Create Payment
 # ==========================================================
 
 @router.post(
-    "",
-    response_model=PaymentSuccessResponse,
-    status_code=201,
-    summary="Make Payment",
+    "/create",
+    response_model=PaymentResponse,
 )
-def create_payment(
-    request: PaymentCreate,
+def make_payment(
+
+    request: CreatePaymentRequest,
+
     db: Session = Depends(get_db),
+
+    current_user: Customer = Depends(get_current_user),
+
 ):
 
-    payment = make_payment(
-        request,
-        db,
-    )
+    return create_payment(
 
-    return PaymentSuccessResponse(
-        message="Payment completed successfully.",
-        payment=payment,
+        request,
+
+        current_user,
+
+        db,
+
     )
 
 
 # ==========================================================
-# GET /payments/{reservation_id}
+# Dashboard Summary (Admin)
+# ==========================================================
+
+@router.get(
+    "/dashboard",
+    response_model=PaymentDashboardResponse,
+)
+def dashboard(
+
+    db: Session = Depends(get_db),
+
+    current_admin=Depends(admin_required),
+
+):
+
+    return payment_dashboard_summary(
+
+        db,
+
+    )
+
+
+# ==========================================================
+# Payment History
+# ==========================================================
+
+@router.get(
+    "/history",
+    response_model=list[PaymentHistoryResponse],
+)
+def history(
+
+    db: Session = Depends(get_db),
+
+    current_user=Depends(get_current_user),
+
+):
+
+    if getattr(current_user, "role", None) == "admin":
+        return get_all_payment_history(db)
+
+    return get_payment_history(
+
+        current_user,
+
+        db,
+
+    )
+
+
+# ==========================================================
+# Payment Details
 # ==========================================================
 
 @router.get(
     "/{reservation_id}",
     response_model=PaymentResponse,
-    summary="Get Payment Details",
 )
 def payment_details(
+
     reservation_id: int,
+
     db: Session = Depends(get_db),
+
+    current_user: Customer = Depends(get_current_user),
+
 ):
 
-    return get_payment(
+    return get_payment_by_reservation(
+
         reservation_id,
+
+        current_user,
+
         db,
+
+    )
+
+
+# ==========================================================
+# Invoice
+# ==========================================================
+
+@router.get(
+    "/invoice/{reservation_id}",
+    response_model=InvoiceResponse,
+)
+def invoice(
+
+    reservation_id: int,
+
+    db: Session = Depends(get_db),
+
+    current_user: Customer = Depends(get_current_user),
+
+):
+
+    return get_invoice(
+
+        reservation_id,
+
+        current_user,
+
+        db,
+
+    )
+
+
+# ==========================================================
+# Refund Payment (Admin)
+# ==========================================================
+
+@router.post(
+    "/refund/{payment_id}",
+    response_model=RefundResponse,
+)
+def refund(
+
+    payment_id: int,
+
+    db: Session = Depends(get_db),
+
+    current_admin=Depends(admin_required),
+
+):
+
+    return refund_payment(
+
+        payment_id,
+
+        db,
+
     )

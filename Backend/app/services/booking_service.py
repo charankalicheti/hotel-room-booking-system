@@ -1,186 +1,268 @@
-"""
-=========================================================
-Booking Service
-Hotel Room Booking System
-=========================================================
-"""
-
-from sqlalchemy.orm import Session
+from app.constants.booking_constants import BookingStatus
+from datetime import date
 
 from app.constants.booking_constants import BookingStatus
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
 from app.models.reservation import Reservation
-from app.schemas.booking_schema import BookingCreate
+from app.models.room import Room
+from app.models.customer import Customer
 
-from app.repositories.booking_repository import (
-    get_customer_by_id,
-    get_customer_by_name,
-    create_customer,
-    get_room_by_id,
-    get_room_by_number,
-    create_booking,
-    get_booking_by_id,
-    get_booking_history,
-    cancel_booking,
-    delete_booking,
-    get_existing_reservation,
+from app.schemas.booking_schema import (
+    BookingCreate,
+    BookingUpdate,
 )
 
-from app.utils.room_availability import (
-    validate_booking_dates,
-    search_available_rooms,
-)
 
-from app.exceptions.booking_exceptions import (
-    CustomerNotFoundException,
-    RoomNotFoundException,
-    BookingNotFoundException,
-    RoomUnavailableException,
-    BookingAlreadyCancelledException,
-)
+# ==========================================================
+# Calculate Days
+# ==========================================================
+
+def calculate_days(
+    check_in: date,
+    check_out: date,
+):
+
+    days = (check_out - check_in).days
+
+    if days <= 0:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid booking dates."
+        )
+
+    return days
 
 
 # ==========================================================
 # Create Booking
 # ==========================================================
 
-def create_new_booking(
+def create_booking(
     request: BookingCreate,
+    customer: Customer,
     db: Session,
-) -> Reservation:
-    """
-    Validate inputs, check availability, compute price, persist reservation.
-    """
+):
 
-    # 1. Validate dates — raises HTTP 400 on bad input
-    validate_booking_dates(request.check_in, request.check_out)
+    room = (
+        db.query(Room)
+        .filter(
+            Room.id == request.room_id
+        )
+        .first()
+    )
 
-    # 2. Customer lookup by name. If not found, create a guest customer.
-    customer = get_customer_by_name(request.customer_name, db)
-    if not customer:
-        # create a guest email and random password
-        import time, secrets
-        from app.utils.password_hash import hash_password
-
-        guest_email = f"guest_{int(time.time())}_{secrets.token_hex(4)}@example.local"
-        guest_password = hash_password(secrets.token_hex(8))
-        customer = create_customer(request.customer_name, guest_email, guest_password, db)
-
-    # 3. Room lookup by room_number
-    room = get_room_by_number(request.room_number, db)
     if not room:
-        raise RoomNotFoundException()
 
-    # 4. Prevent double booking
-    conflict = get_existing_reservation(
-        room.id, request.check_in, request.check_out, db
+        raise HTTPException(
+            status_code=404,
+            detail="Room not found."
+        )
+
+    if not room.is_available:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Room is not available."
+        )
+
+    if request.guests > room.capacity:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Room capacity exceeded."
+        )
+
+    existing = (
+    db.query(Reservation)
+    .filter(
+        Reservation.room_id == room.id,
+        Reservation.status.in_([
+            BookingStatus.PENDING_PAYMENT,
+            BookingStatus.CONFIRMED,
+            BookingStatus.CHECKED_IN,
+        ])
     )
-    if conflict:
-        raise RoomUnavailableException()
+    .all()
+)
 
-    # 5. Calculate total price
-    total_days  = (request.check_out - request.check_in).days
-    total_price = total_days * room.price
+    for booking in existing:
 
-    # 6. Build and persist reservation
+        if (
+            request.check_in < booking.check_out
+            and
+            request.check_out > booking.check_in
+        ):
+
+            raise HTTPException(
+                status_code=400,
+                detail="Room already booked for selected dates."
+            )
+
+    days = calculate_days(
+        request.check_in,
+        request.check_out,
+    )
+
+    total_price = room.price * days
+
     reservation = Reservation(
-        customer_id = customer.id,
-        customer_name = customer.name,
-        room_id     = room.id,
-        check_in    = request.check_in,
-        check_out   = request.check_out,
-        guests      = request.guests,
-        total_price = total_price,
-        status      = BookingStatus.BOOKED,
+
+        customer_id=customer.id,
+
+        customer_name=customer.name,
+
+        room_id=room.id,
+
+        check_in=request.check_in,
+
+        check_out=request.check_out,
+
+        guests=request.guests,
+
+        total_price=total_price,
+
+        status=BookingStatus.PENDING_PAYMENT,
+
     )
 
-    return create_booking(reservation, db)
+    db.add(reservation)
+
+    db.commit()
+
+    db.refresh(reservation)
+
+    return reservation
 
 
 # ==========================================================
-# Get Single Booking
+# Get Customer Bookings
+# ==========================================================
+
+def get_my_bookings(
+    customer: Customer,
+    db: Session,
+):
+
+    return (
+        db.query(Reservation)
+        .filter(
+            Reservation.customer_id == customer.id
+        )
+        .order_by(
+            Reservation.created_at.desc()
+        )
+        .all()
+    )
+
+
+# ==========================================================
+# Booking Details
 # ==========================================================
 
 def get_booking(
     booking_id: int,
+    customer: Customer,
     db: Session,
-) -> Reservation:
-    """
-    Fetch booking by ID; raise 404 if not found.
-    """
-    booking = get_booking_by_id(booking_id, db)
+):
+
+    booking = (
+        db.query(Reservation)
+        .filter(
+            Reservation.id == booking_id,
+            Reservation.customer_id == customer.id
+        )
+        .first()
+    )
+
     if not booking:
-        raise BookingNotFoundException()
+
+        raise HTTPException(
+            status_code=404,
+            detail="Booking not found."
+        )
+
     return booking
-
-
-# ==========================================================
-# Booking History
-# ==========================================================
-
-def get_customer_booking_history(
-    customer_id: int,
-    db: Session,
-) -> list[Reservation]:
-    """
-    Return all bookings for a customer. Validates customer exists first.
-    """
-    customer = get_customer_by_id(customer_id, db)
-    if not customer:
-        raise CustomerNotFoundException()
-
-    return get_booking_history(customer_id, db)
 
 
 # ==========================================================
 # Cancel Booking
 # ==========================================================
 
-def cancel_customer_booking(
+def cancel_booking(
     booking_id: int,
-    db: Session,
-) -> Reservation:
-    """
-    Cancel a booking; raise 404 if not found, 400 if already cancelled.
-    """
-    booking = get_booking_by_id(booking_id, db)
-    if not booking:
-        raise BookingNotFoundException()
-
-    if booking.status == BookingStatus.CANCELLED:
-        raise BookingAlreadyCancelledException()
-
-    return cancel_booking(booking, db)
-
-
-# ==========================================================
-# Delete Booking (permanent removal)
-# ==========================================================
-
-def delete_customer_booking(
-    booking_id: int,
-    db: Session,
-) -> None:
-    """
-    Permanently delete a booking record; raise 404 if not found.
-    """
-    booking = get_booking_by_id(booking_id, db)
-    if not booking:
-        raise BookingNotFoundException()
-
-    delete_booking(booking, db)
-
-
-# ==========================================================
-# Search Available Rooms
-# ==========================================================
-
-def search_rooms(
-    check_in,
-    check_out,
-    guests: int,
+    customer: Customer,
     db: Session,
 ):
-    """
-    Return rooms available for the given dates and guest count.
-    """
-    return search_available_rooms(check_in, check_out, guests, db)
+
+    booking = (
+        db.query(Reservation)
+        .filter(
+            Reservation.id == booking_id,
+            Reservation.customer_id == customer.id
+        )
+        .first()
+    )
+
+    if not booking:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Booking not found."
+        )
+
+    booking.status = BookingStatus.CANCELLED
+
+    db.commit()
+
+    db.refresh(booking)
+
+    return {
+
+        "success": True,
+
+        "message": "Booking cancelled successfully."
+
+    }
+
+
+# ==========================================================
+# Update Booking
+# ==========================================================
+
+def update_booking(
+    booking_id: int,
+    request: BookingUpdate,
+    customer: Customer,
+    db: Session,
+):
+
+    booking = (
+        db.query(Reservation)
+        .filter(
+            Reservation.id == booking_id,
+            Reservation.customer_id == customer.id
+        )
+        .first()
+    )
+
+    if not booking:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Booking not found."
+        )
+
+    data = request.model_dump(exclude_unset=True)
+
+    for key, value in data.items():
+
+        setattr(booking, key, value)
+
+    db.commit()
+
+    db.refresh(booking)
+
+    return booking

@@ -66,7 +66,7 @@ class Reservation(Base):
 
     status = Column(
         Enum(BookingStatus),
-        default=BookingStatus.BOOKED,
+        default=BookingStatus.PENDING_PAYMENT,
         nullable=False
     )
 
