@@ -1,127 +1,173 @@
-"""
-=========================================================
-Bookings Router
-Hotel Room Booking System
-=========================================================
-NOTE: Route order matters in FastAPI.
-      Static paths (/rooms/available) must come BEFORE
-      parameterised paths (/{customer_id}) to avoid
-      FastAPI treating "rooms" as a customer_id integer.
-"""
-
-from datetime import date
-
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import (
+    APIRouter,
+    Depends,
+)
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import get_current_user
+
+from app.models.customer import Customer
 
 from app.schemas.booking_schema import (
     BookingCreate,
     BookingResponse,
-    BookingHistory,
-    CancelBookingResponse,
+    BookingUpdate,
 )
 
 from app.services.booking_service import (
-    create_new_booking,
-    get_customer_booking_history,
-    cancel_customer_booking,
-    delete_customer_booking,
-    search_rooms,
+    create_booking,
+    get_my_bookings,
+    get_booking,
+    update_booking,
+    cancel_booking,
 )
 
 router = APIRouter(
     prefix="/bookings",
-    tags=["Booking"],
+    tags=["Bookings"],
 )
 
 
 # ==========================================================
-# GET /bookings/rooms/available
-# Static route — MUST be declared before /{customer_id}
-# ==========================================================
-
-@router.get(
-    "/rooms/available",
-    summary="Search available rooms by date and guest count",
-)
-def available_rooms(
-    check_in:  date = Query(..., description="Check-in date  (YYYY-MM-DD)"),
-    check_out: date = Query(..., description="Check-out date (YYYY-MM-DD)"),
-    guests:    int  = Query(1,   ge=1, description="Number of guests"),
-    db: Session = Depends(get_db),
-):
-    return search_rooms(check_in, check_out, guests, db)
-
-
-# ==========================================================
-# POST /bookings
+# Create Booking
 # ==========================================================
 
 @router.post(
-    "",
+    "/",
     response_model=BookingResponse,
-    status_code=201,
-    summary="Create a new booking",
 )
-def create_booking(
+def create(
+
     request: BookingCreate,
+
     db: Session = Depends(get_db),
+
+    current_user: Customer = Depends(get_current_user),
+
 ):
-    return create_new_booking(request, db)
 
+    return create_booking(
 
-# ==========================================================
-# GET /bookings/{customer_id}
-# Parameterised route — MUST come after /rooms/available
-# ==========================================================
+        request,
 
-@router.get(
-    "/{customer_id}",
-    response_model=list[BookingHistory],
-    summary="Get booking history for a customer",
-)
-def booking_history(
-    customer_id: int,
-    db: Session = Depends(get_db),
-):
-    return get_customer_booking_history(customer_id, db)
+        current_user,
 
+        db,
 
-# ==========================================================
-# PUT /bookings/{booking_id}/cancel
-# ==========================================================
-
-@router.put(
-    "/{booking_id}/cancel",
-    response_model=CancelBookingResponse,
-    summary="Cancel an existing booking",
-)
-def cancel_booking(
-    booking_id: int,
-    db: Session = Depends(get_db),
-):
-    booking = cancel_customer_booking(booking_id, db)
-    return CancelBookingResponse(
-        message="Booking cancelled successfully.",
-        booking=booking,
     )
 
 
 # ==========================================================
-# DELETE /bookings/{booking_id}
-# Permanently removes the reservation row from the database
+# Get My Bookings
+# ==========================================================
+
+@router.get(
+    "/",
+    response_model=list[BookingResponse],
+)
+def my_bookings(
+
+    db: Session = Depends(get_db),
+
+    current_user: Customer = Depends(get_current_user),
+
+):
+
+    return get_my_bookings(
+
+        current_user,
+
+        db,
+
+    )
+
+
+# ==========================================================
+# Booking Details
+# ==========================================================
+
+@router.get(
+    "/{booking_id}",
+    response_model=BookingResponse,
+)
+def booking_details(
+
+    booking_id: int,
+
+    db: Session = Depends(get_db),
+
+    current_user: Customer = Depends(get_current_user),
+
+):
+
+    return get_booking(
+
+        booking_id,
+
+        current_user,
+
+        db,
+
+    )
+
+
+# ==========================================================
+# Update Booking
+# ==========================================================
+
+@router.put(
+    "/{booking_id}",
+    response_model=BookingResponse,
+)
+def update(
+
+    booking_id: int,
+
+    request: BookingUpdate,
+
+    db: Session = Depends(get_db),
+
+    current_user: Customer = Depends(get_current_user),
+
+):
+
+    return update_booking(
+
+        booking_id,
+
+        request,
+
+        current_user,
+
+        db,
+
+    )
+
+
+# ==========================================================
+# Cancel Booking
 # ==========================================================
 
 @router.delete(
     "/{booking_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    summary="Permanently delete a booking",
 )
-def delete_booking(
+def cancel(
+
     booking_id: int,
+
     db: Session = Depends(get_db),
+
+    current_user: Customer = Depends(get_current_user),
+
 ):
-    delete_customer_booking(booking_id, db)
-    return None
+
+    return cancel_booking(
+
+        booking_id,
+
+        current_user,
+
+        db,
+
+    )

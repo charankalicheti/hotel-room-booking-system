@@ -1,48 +1,137 @@
-from fastapi import APIRouter, Depends
+from fastapi import (
+    APIRouter,
+    Depends,
+)
 from sqlalchemy.orm import Session
-from typing import List
 
 from app.database import get_db
 from app.dependencies import admin_required
-from app.schemas.room_schema import RoomCreate, RoomUpdate, RoomResponse
-from app.services.room_service import (
-    create_room,
-    get_all_rooms,
-    update_room,
-    delete_room
+
+from app.schemas.room_schema import (
+    RoomCreate,
+    RoomUpdate,
+    RoomResponse,
+    RoomSearch,
 )
 
-router = APIRouter(prefix="/rooms", tags=["Admin - Rooms"])
+from app.services.room_service import (
+    get_all_rooms,
+    get_room_by_id,
+    search_rooms,
+    create_room,
+    update_room,
+    delete_room,
+)
+
+router = APIRouter(
+    prefix="/rooms",
+    tags=["Rooms"],
+)
 
 
-@router.post("/", response_model=RoomResponse)
-def add_room(
-    request: RoomCreate,
+# ==========================================================
+# Get All Rooms
+# ==========================================================
+
+@router.get(
+    "/",
+    response_model=list[RoomResponse],
+)
+def all_rooms(
     db: Session = Depends(get_db),
-    admin=Depends(admin_required)
 ):
-    return create_room(request, db)
-
-
-@router.get("/", response_model=List[RoomResponse])
-def list_rooms(db: Session = Depends(get_db)):
     return get_all_rooms(db)
 
 
-@router.put("/{room_id}", response_model=RoomResponse)
+# ==========================================================
+# Get Room By ID
+# ==========================================================
+
+@router.get(
+    "/{room_id}",
+    response_model=RoomResponse,
+)
+def room_details(
+    room_id: int,
+    db: Session = Depends(get_db),
+):
+    return get_room_by_id(
+        room_id,
+        db,
+    )
+
+
+# ==========================================================
+# Search Rooms
+# ==========================================================
+
+@router.post(
+    "/search",
+    response_model=list[RoomResponse],
+)
+def search(
+    request: RoomSearch,
+    db: Session = Depends(get_db),
+):
+    return search_rooms(
+        request,
+        db,
+    )
+
+
+# ==========================================================
+# Create Room (Admin)
+# ==========================================================
+
+@router.post(
+    "/",
+    response_model=RoomResponse,
+)
+def add_room(
+    request: RoomCreate,
+    db: Session = Depends(get_db),
+    current_admin=Depends(admin_required),
+):
+    return create_room(
+        request,
+        db,
+    )
+
+
+# ==========================================================
+# Update Room (Admin)
+# ==========================================================
+
+@router.put(
+    "/{room_id}",
+    response_model=RoomResponse,
+)
 def edit_room(
     room_id: int,
     request: RoomUpdate,
     db: Session = Depends(get_db),
-    admin=Depends(admin_required)
+    current_admin=Depends(admin_required),
 ):
-    return update_room(room_id, request, db)
+    return update_room(
+        room_id,
+        request,
+        db,
+    )
 
 
-@router.delete("/{room_id}")
+# ==========================================================
+# Delete Room (Admin)
+# ==========================================================
+
+@router.delete(
+    "/{room_id}",
+)
 def remove_room(
     room_id: int,
     db: Session = Depends(get_db),
-    admin=Depends(admin_required)
+    current_admin=Depends(admin_required),
 ):
-    return delete_room(room_id, db)
+    return delete_room(
+        room_id,
+        db,
+    )

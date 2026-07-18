@@ -1,68 +1,86 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import report
 
 from app.database import Base, engine
 
 # ==========================================================
-# Member 1 Models
+# Models
 # ==========================================================
 from app.models.admin import Admin
 from app.models.customer import Customer
 from app.models.room import Room
-
-# ==========================================================
-# Member 2 Models
-# ==========================================================
 from app.models.reservation import Reservation
-
-# ==========================================================
-# Member 3 Models
-# ==========================================================
 from app.models.payment import Payment
 
+# ==========================================================
+# Create Database Tables
+# ==========================================================
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Hotel Room Booking System API")
+# ==========================================================
+# FastAPI App
+# ==========================================================
+app = FastAPI(
+    title="Hotel Room Booking System API",
+    description="Backend API for Hotel Room Booking System",
+    version="1.0.0",
+)
 
+# ==========================================================
+# CORS
+# ==========================================================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # ==========================================================
-# Member 1 Routers
+# Routers
 # ==========================================================
-from app.routers import auth, admin
+from app.routers import (
+    auth,
+    admin,
+    rooms,
+    bookings,
+    payments,
+    receptionist,
+)
 
 app.include_router(auth.router)
 app.include_router(admin.router)
-
-# ==========================================================
-# Member 2 Routers
-# ==========================================================
-from app.routers import bookings
-
+app.include_router(rooms.router)
 app.include_router(bookings.router)
-
-# ==========================================================
-# Member 3 Routers
-# ==========================================================
-from app.routers import payments, receptionist
-
 app.include_router(payments.router)
 app.include_router(receptionist.router)
+app.include_router(report.router)
 
-
-@app.get("/")
+# ==========================================================
+# Root Endpoint
+# ==========================================================
+@app.get("/", tags=["Root"])
 def root():
     return {
-        "message": "Hotel Room Booking System API is running"
+        "success": True,
+        "message": "Hotel Room Booking System API is Running 🚀",
+        "version": "1.0.0",
+        "documentation": "/docs",
+    }
+
+# ==========================================================
+# Health Check
+# ==========================================================
+@app.get("/health", tags=["Health"])
+def health_check():
+    return {
+        "status": "UP",
+        "database": "Connected",
+        "application": "Running",
     }

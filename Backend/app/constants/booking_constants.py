@@ -8,10 +8,22 @@ Hotel Room Booking System
 import enum
 
 
-# ==========================================================
-# Booking Status
-# ==========================================================
-
 class BookingStatus(str, enum.Enum):
-    BOOKED    = "BOOKED"
+
+    # Customer created booking
+    PENDING_PAYMENT = "PENDING_PAYMENT"
+
+    # Payment successful
+    CONFIRMED = "CONFIRMED"
+
+    # Customer reached hotel
+    CHECKED_IN = "CHECKED_IN"
+
+    # Customer completed stay
+    CHECKED_OUT = "CHECKED_OUT"
+
+    # Customer cancelled
     CANCELLED = "CANCELLED"
+
+    # Payment refunded
+    REFUNDED = "REFUNDED"

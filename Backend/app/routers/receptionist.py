@@ -5,13 +5,17 @@ Hotel Room Booking System
 =========================================================
 """
 
-from fastapi import APIRouter, Depends
+from fastapi import (
+    APIRouter,
+    Depends,
+)
 
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 
 from app.services.receptionist_service import (
+    get_all_reservations,
     customer_check_in,
     customer_check_out,
 )
@@ -23,7 +27,28 @@ router = APIRouter(
 
 
 # ==========================================================
-# Check In
+# Get All Reservations
+# ==========================================================
+
+@router.get(
+    "/reservations",
+    summary="Get All Reservations",
+)
+def reservations(
+
+    db: Session = Depends(get_db),
+
+):
+
+    return get_all_reservations(
+
+        db,
+
+    )
+
+
+# ==========================================================
+# Customer Check In
 # ==========================================================
 
 @router.put(
@@ -31,18 +56,24 @@ router = APIRouter(
     summary="Customer Check In",
 )
 def check_in(
+
     booking_id: int,
+
     db: Session = Depends(get_db),
+
 ):
 
     return customer_check_in(
+
         booking_id,
+
         db,
+
     )
 
 
 # ==========================================================
-# Check Out
+# Customer Check Out
 # ==========================================================
 
 @router.put(
@@ -50,11 +81,17 @@ def check_in(
     summary="Customer Check Out",
 )
 def check_out(
+
     booking_id: int,
+
     db: Session = Depends(get_db),
+
 ):
 
     return customer_check_out(
+
         booking_id,
+
         db,
+
     )
