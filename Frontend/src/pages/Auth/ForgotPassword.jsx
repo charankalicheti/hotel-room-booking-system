@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -96,7 +96,6 @@ function ForgotPassword() {
             {/* Left Section */}
 
             <Grid
-              item
               xs={12}
               md={5}
               sx={{
@@ -147,7 +146,6 @@ function ForgotPassword() {
             {/* Right Section */}
 
             <Grid
-              item
               xs={12}
               md={7}
             >
@@ -182,7 +180,7 @@ function ForgotPassword() {
                     spacing={3}
                   >
 
-                    <Grid item xs={12}>
+                    <Grid xs={12}>
 
                       <TextField
                         fullWidth
@@ -205,7 +203,7 @@ function ForgotPassword() {
 
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid xs={12}>
 
                       <Button
                         fullWidth
@@ -247,7 +245,7 @@ function ForgotPassword() {
 
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid xs={12}>
 
                       <Typography
                         align="center"

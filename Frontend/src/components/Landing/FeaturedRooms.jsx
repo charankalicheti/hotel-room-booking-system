@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -127,20 +128,7 @@ export default function FeaturedRooms() {
                     ))}
                   </Box>
 
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#D4AF37",
-                      color: "#000",
-                      fontWeight: "bold",
-                      "&:hover": {
-                        bgcolor: "#c79d24",
-                      },
-                    }}
-                  >
-                    Book Now
-                  </Button>
+                  {/* Book Now button removed as requested */}
                 </CardContent>
               </Card>
             </Grid>

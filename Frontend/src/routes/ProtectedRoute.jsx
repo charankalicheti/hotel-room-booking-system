@@ -1,5 +1,7 @@
+import React from "react";
 import { Navigate } from "react-router-dom";
 
+import UserMenu from "../components/Common/UserMenu";
 import { useAuth } from "../context/AuthContext";
 
 function ProtectedRoute({ children, role }) {
@@ -21,7 +23,12 @@ function ProtectedRoute({ children, role }) {
     return <Navigate to="/customer/dashboard" replace />;
   }
 
-  return children;
+  return (
+    <>
+      <UserMenu />
+      {children}
+    </>
+  );
 }
 
 export default ProtectedRoute;

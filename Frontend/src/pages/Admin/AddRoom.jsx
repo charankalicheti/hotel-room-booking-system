@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
   Box,
@@ -19,11 +19,12 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
 import { toast } from "react-toastify";
 
-import { addRoom } from "../../api/roomApi";
+import { addRoom, getRoomDetails, updateRoom } from "../../api/roomApi";
 
-function AddRoom() {
+function AddRoom({ mode = "add" }) {
 
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [loading, setLoading] = useState(false);
 
@@ -66,6 +67,38 @@ function AddRoom() {
 
   };
 
+  useEffect(() => {
+    const loadRoom = async () => {
+      if ((!mode || mode === "add") || !id) return;
+
+      try {
+        setLoading(true);
+        const data = await getRoomDetails(id);
+        setRoom({
+          room_number: data.room_number || "",
+          room_type: data.room_type || "",
+          price: data.price ?? "",
+          capacity: data.capacity ?? "",
+          floor_number: data.floor_number ?? "",
+          bed_type: data.bed_type || "",
+          description: data.description || "",
+          image_url: data.image_url || "",
+          ac: data.ac ?? true,
+          wifi: data.wifi ?? true,
+          tv: data.tv ?? true,
+          breakfast_included: data.breakfast_included ?? false,
+        });
+      } catch (error) {
+        toast.error(error.response?.data?.detail || "Unable to load room details.");
+        navigate("/admin/rooms");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRoom();
+  }, [id, mode, navigate]);
+
   const handleSubmit = async (e) => {
 
     e.preventDefault();
@@ -81,9 +114,13 @@ function AddRoom() {
         floor_number: Number(room.floor_number),
       };
 
-      await addRoom(payload);
-
-      toast.success("Room added successfully.");
+      if (mode === "edit" && id) {
+        await updateRoom(id, payload);
+        toast.success("Room updated successfully.");
+      } else {
+        await addRoom(payload);
+        toast.success("Room added successfully.");
+      }
 
       navigate("/admin/rooms");
 
@@ -91,13 +128,12 @@ function AddRoom() {
 
       toast.error(
         error.response?.data?.detail ||
-        "Unable to create room."
+        (mode === "edit" ? "Unable to update room." : "Unable to create room.")
       );
 
     } finally {
 
       setLoading(false);
-
     }
 
   };
@@ -125,7 +161,7 @@ function AddRoom() {
             variant="h4"
             fontWeight="bold"
           >
-            Add New Room
+            {mode === "edit" ? "Edit Room" : mode === "view" ? "Room Details" : "Add New Room"}
           </Typography>
 
           <Button
@@ -600,27 +636,29 @@ function AddRoom() {
                       onClick={() => navigate("/admin/rooms")}
                       disabled={loading}
                     >
-                      Cancel
+                      {mode === "view" ? "Back" : "Cancel"}
                     </Button>
 
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      size="large"
-                      startIcon={<SaveRoundedIcon />}
-                      disabled={loading}
-                      sx={{
-                        bgcolor: "#D4AF37",
-                        color: "#000",
-                        px: 5,
+                    {mode !== "view" && (
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        size="large"
+                        startIcon={<SaveRoundedIcon />}
+                        disabled={loading}
+                        sx={{
+                          bgcolor: "#D4AF37",
+                          color: "#000",
+                          px: 5,
 
-                        "&:hover": {
-                          bgcolor: "#C89B1D",
-                        },
-                      }}
-                    >
-                      {loading ? "Saving..." : "Save Room"}
-                    </Button>
+                          "&:hover": {
+                            bgcolor: "#C89B1D",
+                          },
+                        }}
+                      >
+                        {loading ? "Saving..." : "Save Room"}
+                      </Button>
+                    )}
 
                   </Stack>
 

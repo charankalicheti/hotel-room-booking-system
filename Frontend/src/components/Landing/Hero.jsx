@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
+import gallery1 from "../../assets/images/gallery/gallery1.jpg";
+import gallery2 from "../../assets/images/gallery/gallery2.jpg";
+import gallery3 from "../../assets/images/gallery/gallery3.jpg";
+import gallery4 from "../../assets/images/gallery/gallery4.jpg";
 import {
   Box,
   Button,
@@ -14,22 +18,37 @@ import {
   Link as RouterLink,
   useNavigate,
 } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Hero() {
   const navigate = useNavigate();
 
   const [loaded, setLoaded] = useState(false);
+  const [index, setIndex] = useState(0);
+  const images = useMemo(() => [gallery1, gallery2, gallery3, gallery4].filter(Boolean), []);
 
   const [searchData, setSearchData] = useState({
-    destination: "Royal Hotel",
     checkIn: "",
     checkOut: "",
     guests: "1",
   });
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     setLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (images.length <= 1) {
+      return undefined;
+    }
+
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % images.length);
+    }, 4000);
+
+    return () => clearInterval(id);
+  }, [images.length]);
 
   const handleChange = (e) => {
     setSearchData({
@@ -39,9 +58,7 @@ export default function Hero() {
   };
 
   const handleSearch = () => {
-    navigate("/customer/search-rooms", {
-      state: searchData,
-    });
+    navigate("/login");
   };
 
   return (
@@ -54,15 +71,32 @@ export default function Hero() {
         overflow: "hidden",
         display: "flex",
         alignItems: "center",
-
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)),url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=2200&q=100')",
-
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
+      // background handled by absolutely positioned images for smooth fade
       }}
     >
+      {/* Background images (crossfade) */}
+      {images.length > 0 && images.map((src, i) => (
+        <Box
+          key={i}
+          component="img"
+          src={src}
+          alt={`hero-${i}`}
+          onError={(event) => {
+            event.currentTarget.style.display = "none";
+          }}
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "opacity 0.6s ease-in-out, transform 6s ease",
+            opacity: i === index ? 1 : 0,
+            transform: i === index ? "scale(1.02)" : "scale(1)",
+            zIndex: 0,
+          }}
+        />
+      ))}
       {/* Left Gradient */}
 
       <Box
@@ -213,9 +247,13 @@ export default function Hero() {
               <Button
                 variant="outlined"
                 size="large"
-                onClick={() =>
-                  navigate("/customer/search-rooms")
-                }
+                onClick={() => {
+                  if (window.location.pathname === "/" || window.location.pathname.startsWith("/landing")) {
+                    document.getElementById("rooms")?.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    navigate("/#rooms");
+                  }
+                }}
                 sx={{
                   borderColor: "#fff",
                   color: "#fff",
@@ -256,7 +294,7 @@ export default function Hero() {
 
                   gridTemplateColumns: {
                     xs: "1fr",
-                    md: "2fr 1.3fr 1.3fr 1fr auto",
+                    md: "1.4fr 1.2fr 1fr auto",
                   },
 
                   gap: 2,
@@ -271,36 +309,7 @@ export default function Hero() {
                   },
                 }}
               >
-                {/* Destination */}
-
-                <Box>
-                  <Typography
-                    sx={{
-                      color: "#D4AF37",
-                      fontWeight: 700,
-                      mb: 1,
-                    }}
-                  >
-                    Destination
-                  </Typography>
-
-                  <input
-                    name="destination"
-                    value={searchData.destination}
-                    onChange={handleChange}
-                    placeholder="Destination"
-                    style={{
-                      width: "100%",
-                      padding: "16px",
-                      borderRadius: "12px",
-                      border: "1px solid rgba(255,255,255,.25)",
-                      background: "rgba(255,255,255,.08)",
-                      color: "#fff",
-                      outline: "none",
-                      fontSize: "16px",
-                    }}
-                  />
-                </Box>
+                {/* Destination removed per request */}
 
                 {/* Check In */}
 

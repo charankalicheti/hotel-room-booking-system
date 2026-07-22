@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import HotelRoundedIcon from "@mui/icons-material/HotelRounded";
 import BookOnlineRoundedIcon from "@mui/icons-material/BookOnlineRounded";
