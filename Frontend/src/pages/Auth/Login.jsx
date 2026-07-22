@@ -35,6 +35,9 @@ export default function Login() {
 
   const { login } = useAuth();
 
+  const location = useLocation();
+  const from = location.state?.from?.pathname;
+
   const [loading, setLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -78,6 +81,12 @@ export default function Login() {
       login(response.access_token, response);
 
       toast.success("Login Successful");
+
+      if (from) {
+        // Return to the original requested page after login
+        navigate(from, { replace: true });
+        return;
+      }
 
       if (response.role === "admin") {
         navigate("/admin/dashboard");

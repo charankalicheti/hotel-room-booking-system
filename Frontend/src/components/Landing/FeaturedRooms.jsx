@@ -11,6 +11,7 @@ import {
   Rating,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const rooms = [
   {
@@ -43,6 +44,8 @@ const rooms = [
 ];
 
 export default function FeaturedRooms() {
+  const navigate = useNavigate();
+
   return (
     <Box
       id="rooms"
