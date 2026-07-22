@@ -22,11 +22,13 @@ from app.models.customer import Customer
 
 from app.schemas.payment_schema import (
     CreatePaymentRequest,
+    CreatePaymentResponse,
     PaymentResponse,
     PaymentHistoryResponse,
     PaymentDashboardResponse,
     RefundResponse,
     InvoiceResponse,
+    VerifyPaymentRequest,
 )
 
 from app.services.payment_service import (
@@ -37,6 +39,7 @@ from app.services.payment_service import (
     get_invoice,
     payment_dashboard_summary,
     refund_payment,
+    verify_payment,
 )
 
 router = APIRouter(
@@ -51,7 +54,7 @@ router = APIRouter(
 
 @router.post(
     "/create",
-    response_model=PaymentResponse,
+    response_model=CreatePaymentResponse,
 )
 def make_payment(
 
@@ -71,6 +74,22 @@ def make_payment(
 
         db,
 
+    )
+
+
+@router.post(
+    "/verify",
+    response_model=PaymentResponse,
+)
+def verify_payment_route(
+    request: VerifyPaymentRequest,
+    db: Session = Depends(get_db),
+    current_user: Customer = Depends(get_current_user),
+):
+    return verify_payment(
+        request,
+        current_user,
+        db,
     )
 
 
