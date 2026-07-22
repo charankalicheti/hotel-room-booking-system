@@ -1,3 +1,4 @@
+import React from "react";
 import Navbar from "../../components/Landing/Navbar";
 import Hero from "../../components/Landing/Hero";
 import FeaturedRooms from "../../components/Landing/FeaturedRooms";
@@ -9,6 +10,7 @@ import Testimonials from "../../components/Landing/Testimonials";
 import About from "../../components/Landing/About";
 import Contact from "../../components/Landing/Contact";
 import Footer from "../../components/Landing/Footer";
+import RestaurantCarousel from "../../components/Landing/RestaurantCarousel";
 
 export default function Landing() {
   return (
@@ -21,6 +23,8 @@ export default function Landing() {
         <FeaturedRooms />
 
         <Amenities />
+
+        <RestaurantCarousel />
 
         <WhyChooseUs />
 

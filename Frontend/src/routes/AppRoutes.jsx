@@ -1,3 +1,4 @@
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Landing from "../pages/Common/Landing";
@@ -34,6 +35,7 @@ import Customers from "../pages/Admin/Customers";
 import Reservations from "../pages/Admin/Reservations";
 import AdminPayments from "../pages/Admin/Payments";
 import Reports from "../pages/Admin/Reports";
+import WalkInBooking from "../pages/Admin/WalkInBooking";
 
 function AppRoutes() {
 
@@ -56,7 +58,17 @@ function AppRoutes() {
       />
 
       <Route
+        path="/auth/login"
+        element={<Login />}
+      />
+
+      <Route
         path="/register"
+        element={<Register />}
+      />
+
+      <Route
+        path="/auth/register"
         element={<Register />}
       />
 
@@ -207,6 +219,24 @@ function AppRoutes() {
       />
 
       <Route
+        path="/admin/rooms/:id"
+        element={
+          <ProtectedRoute role="admin">
+            <AddRoom mode="view" />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/rooms/edit/:id"
+        element={
+          <ProtectedRoute role="admin">
+            <AddRoom mode="edit" />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/customers"
         element={
           <ProtectedRoute role="admin">
@@ -229,6 +259,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute role="admin">
             <AdminPayments />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/walk-in"
+        element={
+          <ProtectedRoute role="admin">
+            <WalkInBooking />
           </ProtectedRoute>
         }
       />

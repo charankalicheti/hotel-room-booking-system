@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -92,7 +92,16 @@ function Dashboard() {
   }
 
   return (
-    <Box sx={{ bgcolor: "#F5F7FA", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        bgcolor: "#F5F7FA",
+        minHeight: "100vh",
+        backgroundImage: `linear-gradient(rgba(248,250,252,0.9), rgba(248,250,252,0.96)), url(${gallery1})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <Box sx={{ position: "relative", overflow: "hidden" }}>
         <Box
           component="img"
@@ -165,25 +174,6 @@ function Dashboard() {
                 }}
               >
                 Search Rooms
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => navigate("/customer/booking")}
-                sx={{
-                  borderColor: "rgba(255,255,255,0.9)",
-                  color: "#fff",
-                  px: 5,
-                  py: 1.8,
-                  borderRadius: 3,
-                  fontWeight: 700,
-                  "&:hover": {
-                    borderColor: "#FFD54F",
-                    color: "#FFD54F",
-                  },
-                }}
-              >
-                My Bookings
               </Button>
             </Stack>
           </Box>
@@ -265,23 +255,6 @@ function Dashboard() {
                 Handpicked rooms with premium amenities and beautiful views.
               </Typography>
             </Box>
-            <Button
-              variant="contained"
-              onClick={() => navigate("/customer/search-rooms")}
-              sx={{
-                borderRadius: 3,
-                px: 4,
-                py: 1.5,
-                bgcolor: "#0F172A",
-                color: "#fff",
-                fontWeight: 700,
-                "&:hover": {
-                  bgcolor: "#131F3C",
-                },
-              }}
-            >
-              Explore Rooms
-            </Button>
           </Stack>
 
           <Grid container spacing={4}>

@@ -16,6 +16,21 @@ export const createPayment = async (paymentData) => {
 };
 
 // ==========================================================
+// Verify Payment
+// ==========================================================
+
+export const verifyPayment = async (paymentData) => {
+
+  const { data } = await api.post(
+    "/payments/verify",
+    paymentData
+  );
+
+  return data;
+
+};
+
+// ==========================================================
 // Payment Details
 // ==========================================================
 

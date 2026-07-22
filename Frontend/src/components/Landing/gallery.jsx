@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Card,
@@ -11,25 +12,15 @@ import gallery1 from "../../assets/images/gallery/gallery1.jpg";
 import gallery2 from "../../assets/images/gallery/gallery2.jpg";
 import gallery3 from "../../assets/images/gallery/gallery3.jpg";
 import gallery4 from "../../assets/images/gallery/gallery4.jpg";
+import pool from "../../assets/images/facilities/pool.jpg";
+import spa from "../../assets/images/facilities/spa.jpg";
 
-const images = [
-  gallery1,
-  gallery2,
-  gallery3,
-  gallery4,
-  gallery2,
-  gallery1,
-];
+// remove duplicates and include pool/spa images
+const images = [gallery1, gallery2, gallery3, gallery4, pool, spa];
 
 export default function Gallery() {
   return (
-    <Box
-      id="gallery"
-      sx={{
-        py: 10,
-        background: "#F8FAFC",
-      }}
-    >
+    <Box id="gallery" sx={{ py: 6, background: "#F8FAFC" }}>
       <Container maxWidth="xl">
         <Typography
           align="center"
@@ -66,13 +57,13 @@ export default function Gallery() {
                   },
 
                   "&:hover img": {
-                    transform: "scale(1.08)",
+                    transform: "scale(1.06)",
                   },
                 }}
               >
                 <CardMedia
                   component="img"
-                  height="300"
+                  height="240"
                   image={image}
                   alt="Hotel Gallery"
                 />

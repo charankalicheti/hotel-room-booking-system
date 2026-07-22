@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -63,21 +64,7 @@ export default function About() {
               and truly exceptional.
             </Typography>
 
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                px: 4,
-                py: 1.5,
-                borderRadius: 3,
-                bgcolor: "#D4AF37",
-                "&:hover": {
-                  bgcolor: "#B8860B",
-                },
-              }}
-            >
-              Explore More
-            </Button>
+            {/* Explore More button removed as requested */}
           </Grid>
 
           {/* Right Side */}

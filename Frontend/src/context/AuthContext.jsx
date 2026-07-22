@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   getCurrentUser,
@@ -16,6 +17,7 @@ import {
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   const [token, setToken] = useState(null);
@@ -83,6 +85,9 @@ export const AuthProvider = ({ children }) => {
     setRole(null);
 
     setUser(null);
+
+    navigate("/", { replace: true });
+    window.location.assign("/");
   };
 
   // ===========================================

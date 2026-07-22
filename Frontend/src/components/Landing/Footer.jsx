@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Container,
@@ -61,21 +62,29 @@ export default function Footer() {
             </Typography>
 
             <Stack direction="row" spacing={1} mt={3}>
-              <IconButton sx={{ color: "#fff" }}>
-                <Facebook />
-              </IconButton>
+                <Link href="https://www.facebook.com/login" target="_blank" rel="noopener noreferrer" underline="none">
+                  <IconButton sx={{ color: "#fff" }}>
+                    <Facebook />
+                  </IconButton>
+                </Link>
 
-              <IconButton sx={{ color: "#fff" }}>
-                <Twitter />
-              </IconButton>
+                <Link href="https://twitter.com/i/flow/login" target="_blank" rel="noopener noreferrer" underline="none">
+                  <IconButton sx={{ color: "#fff" }}>
+                    <Twitter />
+                  </IconButton>
+                </Link>
 
-              <IconButton sx={{ color: "#fff" }}>
-                <Instagram />
-              </IconButton>
+                <Link href="https://www.instagram.com/accounts/login/" target="_blank" rel="noopener noreferrer" underline="none">
+                  <IconButton sx={{ color: "#fff" }}>
+                    <Instagram />
+                  </IconButton>
+                </Link>
 
-              <IconButton sx={{ color: "#fff" }}>
-                <LinkedIn />
-              </IconButton>
+                <Link href="https://www.linkedin.com/login" target="_blank" rel="noopener noreferrer" underline="none">
+                  <IconButton sx={{ color: "#fff" }}>
+                    <LinkedIn />
+                  </IconButton>
+                </Link>
             </Stack>
           </Grid>
 

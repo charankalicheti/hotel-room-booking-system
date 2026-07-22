@@ -1,10 +1,11 @@
+import React from "react";
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 
 export default function WhyChooseUs() {
   return (
     <Box
       sx={{
-        py: 12,
+        py: 8,
         background: "#0F172A",
       }}
     >
@@ -14,18 +15,7 @@ export default function WhyChooseUs() {
           spacing={6}
           alignItems="center"
         >
-          <Grid item xs={12} md={6}>
-            <img
-              src="https://images.unsplash.com/photo-1522798514-97ceb8c4f1c8?auto=format&fit=crop&w=900&q=80"
-              alt="Hotel"
-              style={{
-                width: "100%",
-                borderRadius: 20,
-              }}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <Typography
               sx={{
                 color: "#D4AF37",
@@ -66,24 +56,7 @@ export default function WhyChooseUs() {
                 <Typography color="#fff">
                   ✔ 24/7 Reception
                 </Typography>
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography color="#fff">
-                  ✔ Luxury Rooms
-                </Typography>
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography color="#fff">
-                  ✔ Airport Pickup
-                </Typography>
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography color="#fff">
-                  ✔ Best Price Guarantee
-                </Typography>
+              {/* buttons removed */}
               </Grid>
 
               <Grid item xs={6}>
@@ -99,23 +72,7 @@ export default function WhyChooseUs() {
               </Grid>
             </Grid>
 
-            <Button
-              variant="contained"
-              sx={{
-                mt: 5,
-                bgcolor: "#D4AF37",
-                color: "#000",
-                px: 5,
-                py: 1.5,
-                fontWeight: "bold",
-
-                "&:hover": {
-                  bgcolor: "#c69a17",
-                },
-              }}
-            >
-              Discover More
-            </Button>
+            {/* Discover More button removed as requested */}
           </Grid>
         </Grid>
       </Container>

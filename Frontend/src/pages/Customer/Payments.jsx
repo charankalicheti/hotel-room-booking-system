@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
@@ -29,7 +29,7 @@ import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 
 import { toast } from "react-toastify";
 
-import { createPayment } from "../../api/paymentApi";
+import { createPayment, verifyPayment } from "../../api/paymentApi";
 
 function Payments() {
 
@@ -39,11 +39,12 @@ function Payments() {
 
   const booking = location.state?.booking;
 
-  const [paymentMethod, setPaymentMethod] = useState("CARD");
+  const [paymentMethod, setPaymentMethod] = useState("RAZORPAY");
 
   const [paymentStep, setPaymentStep] = useState(0);
 
   const [loading, setLoading] = useState(false);
+  const [razorpayReady, setRazorpayReady] = useState(false);
 
   const amount = Number(booking?.total_price || 0);
   const discount = 0.0;
@@ -55,12 +56,29 @@ function Payments() {
     "Complete",
   ];
 
+  useEffect(() => {
+    if (!booking) {
+      navigate("/customer/dashboard", { replace: true });
+    }
+  }, [booking, navigate]);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => setRazorpayReady(true);
+    script.onerror = () => setRazorpayReady(false);
+    document.body.appendChild(script);
+
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
   if (!booking) {
-
-    navigate("/customer/dashboard");
-
     return null;
-
   }
 
   // ==========================================================
@@ -70,40 +88,81 @@ function Payments() {
   const handlePayment = async () => {
 
     try {
-
       setLoading(true);
       setPaymentStep(1);
 
-      const response = await createPayment({
+      const order = await createPayment({
         reservation_id: booking.id,
         payment_method: paymentMethod,
       });
 
-      setPaymentStep(2);
+      if (order?.test_mode) {
+        setPaymentStep(2);
+        toast.success("Payment simulated successfully. Your booking is now confirmed.");
+        navigate(`/customer/payment-invoice/${booking.id}`);
+        return;
+      }
 
-      toast.success(
-        "Payment Successful."
-      );
+      if (!razorpayReady || typeof window.Razorpay === "undefined") {
+        throw new Error("Razorpay checkout could not be loaded.");
+      }
 
-      navigate(
-        `/customer/payment-invoice/${booking.id}`
-      );
+      const options = {
+        key: order.key,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Royal Hotel",
+        description: `Reservation #${booking.id}`,
+        order_id: order.order_id,
+        handler: async (response) => {
+          try {
+            await verifyPayment({
+              reservation_id: booking.id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
 
+            setPaymentStep(2);
+            toast.success("Payment successful.");
+            navigate(`/customer/payment-invoice/${booking.id}`);
+          } catch (error) {
+            setPaymentStep(0);
+            toast.error(
+              error.response?.data?.detail ||
+                "Payment verification failed."
+            );
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setLoading(false);
+            setPaymentStep(0);
+            toast.info("Payment cancelled.");
+          },
+        },
+        prefill: {
+          name: booking?.customer_name || "Guest",
+          email: booking?.customer_email || "",
+          contact: booking?.customer_phone || "",
+        },
+        theme: {
+          color: "#D4AF37",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+      setLoading(false);
     } catch (error) {
       setPaymentStep(0);
-
-      toast.error(
-
-        error.response?.data?.detail ||
-
-        "Payment Failed."
-
-      );
-
-    } finally {
-
       setLoading(false);
 
+      toast.error(
+        error.response?.data?.detail ||
+          error.message ||
+          "Payment Failed."
+      );
     }
 
   };
@@ -293,15 +352,8 @@ function Payments() {
                     setPaymentMethod(e.target.value)
                   }
                 >
-                  <MenuItem value="CARD">
-                    Credit / Debit Card
-                  </MenuItem>
-                  <MenuItem value="UPI">UPI</MenuItem>
-                  <MenuItem value="NET_BANKING">
-                    Net Banking
-                  </MenuItem>
-                  <MenuItem value="WALLET">
-                    Wallet / Mobile Pay
+                  <MenuItem value="RAZORPAY">
+                    Razorpay (Cards, UPI, Net Banking)
                   </MenuItem>
                 </TextField>
               </Box>

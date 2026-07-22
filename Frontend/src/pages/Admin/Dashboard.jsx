@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -16,14 +16,13 @@ import {
 } from "@mui/material";
 
 import hero from "../../assets/images/hero/hero.jpg";
-import gallery1 from "../../assets/images/gallery/gallery1.jpg";
-import gallery2 from "../../assets/images/gallery/gallery2.jpg";
 
 import HotelRoundedIcon from "@mui/icons-material/HotelRounded";
 import BookOnlineRoundedIcon from "@mui/icons-material/BookOnlineRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import PaymentsRoundedIcon from "@mui/icons-material/PaymentsRounded";
 import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
+import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 
 import { toast } from "react-toastify";
 
@@ -104,11 +103,20 @@ function Dashboard() {
       sx={{
         minHeight: "100vh",
         backgroundImage:
-          `linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url(${hero})`,
+          `linear-gradient(135deg, rgba(2,6,23,0.92) 0%, rgba(15,23,42,0.72) 45%, rgba(30,41,59,0.78) 100%), url(${hero})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         py: 5,
+        position: "relative",
+        overflow: "hidden",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          inset: 0,
+          background: "radial-gradient(circle at top left, rgba(212,175,55,0.24), transparent 35%), radial-gradient(circle at bottom right, rgba(124,58,237,0.18), transparent 30%)",
+          pointerEvents: "none",
+        },
       }}
     >
 
@@ -124,6 +132,10 @@ function Dashboard() {
             color: "#fff",
             backdropFilter: "blur(18px)",
             border: "1px solid rgba(255,255,255,0.12)",
+            boxShadow: "0 30px 80px rgba(2,6,23,0.35)",
+            position: "relative",
+            overflow: "hidden",
+            transform: "translateY(-4px)",
           }}
         >
 
@@ -187,8 +199,8 @@ function Dashboard() {
 
         </Card>
 
-        <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6} md={3}>
+        <Grid container spacing={3} sx={{ position: "relative", zIndex: 2 }}>
+          <Grid item xs={12} sm={6} md={3}>
 
             <Card
               elevation={4}
@@ -197,8 +209,27 @@ function Dashboard() {
                 p: 3,
                 textAlign: "center",
                 height: "100%",
-                backgroundColor: "rgba(255,255,255,0.82)",
-                backdropFilter: "blur(10px)",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,247,237,0.9))",
+                backdropFilter: "blur(12px)",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.16)",
+                transform: "translateY(8px)",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                position: "relative",
+                overflow: "hidden",
+                "&:hover": {
+                  transform: "translateY(-6px)",
+                  boxShadow: "0 26px 55px rgba(15,23,42,0.22)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: -24,
+                  right: -24,
+                  width: 96,
+                  height: 96,
+                  borderRadius: "50%",
+                  background: "rgba(212,175,55,0.14)",
+                },
               }}
             >
 
@@ -234,6 +265,27 @@ function Dashboard() {
                 p: 3,
                 textAlign: "center",
                 height: "100%",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,249,255,0.95))",
+                backdropFilter: "blur(12px)",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.16)",
+                transform: "translateY(16px)",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                position: "relative",
+                overflow: "hidden",
+                "&:hover": {
+                  transform: "translateY(6px)",
+                  boxShadow: "0 26px 55px rgba(15,23,42,0.22)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: -20,
+                  left: -18,
+                  width: 92,
+                  height: 92,
+                  borderRadius: "50%",
+                  background: "rgba(25,118,210,0.14)",
+                },
               }}
             >
 
@@ -270,6 +322,27 @@ function Dashboard() {
                 p: 3,
                 textAlign: "center",
                 height: "100%",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,253,244,0.95))",
+                backdropFilter: "blur(12px)",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.16)",
+                transform: "translateY(24px)",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                position: "relative",
+                overflow: "hidden",
+                "&:hover": {
+                  transform: "translateY(12px)",
+                  boxShadow: "0 26px 55px rgba(15,23,42,0.22)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: -18,
+                  left: -18,
+                  width: 88,
+                  height: 88,
+                  borderRadius: "50%",
+                  background: "rgba(46,125,50,0.14)",
+                },
               }}
             >
 
@@ -306,6 +379,27 @@ function Dashboard() {
                 p: 3,
                 textAlign: "center",
                 height: "100%",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,247,237,0.95))",
+                backdropFilter: "blur(12px)",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.16)",
+                transform: "translateY(32px)",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                position: "relative",
+                overflow: "hidden",
+                "&:hover": {
+                  transform: "translateY(18px)",
+                  boxShadow: "0 26px 55px rgba(15,23,42,0.22)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: -18,
+                  right: -20,
+                  width: 96,
+                  height: 96,
+                  borderRadius: "50%",
+                  background: "rgba(239,108,0,0.14)",
+                },
               }}
             >
 
@@ -348,16 +442,47 @@ function Dashboard() {
           Quick Actions
         </Typography>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{ position: "relative", zIndex: 2 }}>
 
           <Grid item xs={12} md={3}>
 
             <Card
+              onClick={() => navigate("/admin/rooms")}
               sx={{
                 borderRadius: 4,
                 p: 3,
                 textAlign: "center",
                 height: "100%",
+                cursor: "pointer",
+                background: "linear-gradient(145deg, rgba(255,255,255,0.96), rgba(248,250,252,0.9))",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.12)",
+                border: "1px solid rgba(15,23,42,0.05)",
+                position: "relative",
+                overflow: "hidden",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                "&:hover": {
+                  transform: "translateY(-6px) translateX(2px)",
+                  boxShadow: "0 30px 55px rgba(15,23,42,0.18)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "0 0 auto auto",
+                  width: 120,
+                  height: 120,
+                  background: "radial-gradient(circle, rgba(212,175,55,0.18), transparent 70%)",
+                  pointerEvents: "none",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "auto -16px -16px auto",
+                  width: 92,
+                  height: 92,
+                  borderRadius: "50%",
+                  background: "rgba(15,23,42,0.04)",
+                  pointerEvents: "none",
+                },
               }}
             >
 
@@ -384,20 +509,6 @@ function Dashboard() {
                 Add, edit and remove hotel rooms.
               </Typography>
 
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => navigate("/admin/rooms")}
-                sx={{
-                  bgcolor: "#D4AF37",
-                  color: "#000",
-                  fontWeight: 700,
-                  textTransform: "none",
-                }}
-              >
-                Go to Rooms
-              </Button>
-
             </Card>
 
           </Grid>
@@ -405,11 +516,42 @@ function Dashboard() {
           <Grid item xs={12} md={3}>
 
             <Card
+              onClick={() => navigate("/admin/reservations")}
               sx={{
                 borderRadius: 4,
                 p: 3,
                 textAlign: "center",
                 height: "100%",
+                cursor: "pointer",
+                background: "linear-gradient(145deg, rgba(255,255,255,0.96), rgba(248,250,252,0.9))",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.12)",
+                border: "1px solid rgba(15,23,42,0.05)",
+                position: "relative",
+                overflow: "hidden",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                "&:hover": {
+                  transform: "translateY(-6px) translateX(2px)",
+                  boxShadow: "0 30px 55px rgba(15,23,42,0.18)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "0 0 auto auto",
+                  width: 120,
+                  height: 120,
+                  background: "radial-gradient(circle, rgba(25,118,210,0.14), transparent 70%)",
+                  pointerEvents: "none",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "auto -16px -16px auto",
+                  width: 92,
+                  height: 92,
+                  borderRadius: "50%",
+                  background: "rgba(15,23,42,0.04)",
+                  pointerEvents: "none",
+                },
               }}
             >
 
@@ -436,31 +578,48 @@ function Dashboard() {
                 View, approve and cancel reservations.
               </Typography>
 
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => navigate("/admin/reservations")}
-                sx={{
-                  bgcolor: "#1976D2",
-                  color: "#fff",
-                  fontWeight: 700,
-                  textTransform: "none",
-                }}
-              >
-                Go to Reservations
-              </Button>
-
             </Card>
 
           </Grid>
                     <Grid item xs={12} md={3}>
 
             <Card
+              onClick={() => navigate("/admin/customers")}
               sx={{
                 borderRadius: 4,
                 p: 3,
                 textAlign: "center",
                 height: "100%",
+                cursor: "pointer",
+                background: "linear-gradient(145deg, rgba(255,255,255,0.96), rgba(248,250,252,0.9))",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.12)",
+                border: "1px solid rgba(15,23,42,0.05)",
+                position: "relative",
+                overflow: "hidden",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                "&:hover": {
+                  transform: "translateY(-6px) translateX(2px)",
+                  boxShadow: "0 30px 55px rgba(15,23,42,0.18)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "0 0 auto auto",
+                  width: 120,
+                  height: 120,
+                  background: "radial-gradient(circle, rgba(46,125,50,0.16), transparent 70%)",
+                  pointerEvents: "none",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "auto -16px -16px auto",
+                  width: 92,
+                  height: 92,
+                  borderRadius: "50%",
+                  background: "rgba(15,23,42,0.04)",
+                  pointerEvents: "none",
+                },
               }}
             >
 
@@ -487,20 +646,6 @@ function Dashboard() {
                 View customer profiles and booking history.
               </Typography>
 
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => navigate("/admin/customers")}
-                sx={{
-                  bgcolor: "#2E7D32",
-                  color: "#fff",
-                  fontWeight: 700,
-                  textTransform: "none",
-                }}
-              >
-                Go to Customers
-              </Button>
-
             </Card>
 
           </Grid>
@@ -508,11 +653,42 @@ function Dashboard() {
           <Grid item xs={12} md={3}>
 
             <Card
+              onClick={() => navigate("/admin/payments")}
               sx={{
                 borderRadius: 4,
                 p: 3,
                 textAlign: "center",
                 height: "100%",
+                cursor: "pointer",
+                background: "linear-gradient(145deg, rgba(255,255,255,0.96), rgba(248,250,252,0.9))",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.12)",
+                border: "1px solid rgba(15,23,42,0.05)",
+                position: "relative",
+                overflow: "hidden",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                "&:hover": {
+                  transform: "translateY(-6px) translateX(2px)",
+                  boxShadow: "0 30px 55px rgba(15,23,42,0.18)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "0 0 auto auto",
+                  width: 120,
+                  height: 120,
+                  background: "radial-gradient(circle, rgba(239,108,0,0.16), transparent 70%)",
+                  pointerEvents: "none",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "auto -16px -16px auto",
+                  width: 92,
+                  height: 92,
+                  borderRadius: "50%",
+                  background: "rgba(15,23,42,0.04)",
+                  pointerEvents: "none",
+                },
               }}
             >
 
@@ -539,19 +715,74 @@ function Dashboard() {
                 Review payment transactions and revenue.
               </Typography>
 
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => navigate("/admin/payments")}
+            </Card>
+
+          </Grid>
+
+          <Grid item xs={12} md={3}>
+
+            <Card
+              onClick={() => navigate("/admin/walk-in")}
+              sx={{
+                borderRadius: 4,
+                p: 3,
+                textAlign: "center",
+                height: "100%",
+                cursor: "pointer",
+                background: "linear-gradient(145deg, rgba(255,255,255,0.96), rgba(248,250,252,0.9))",
+                boxShadow: "0 20px 45px rgba(15,23,42,0.12)",
+                border: "1px solid rgba(15,23,42,0.05)",
+                position: "relative",
+                overflow: "hidden",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                "&:hover": {
+                  transform: "translateY(-6px) translateX(2px)",
+                  boxShadow: "0 30px 55px rgba(15,23,42,0.18)",
+                },
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "0 0 auto auto",
+                  width: 120,
+                  height: 120,
+                  background: "radial-gradient(circle, rgba(124,58,237,0.16), transparent 70%)",
+                  pointerEvents: "none",
+                },
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  inset: "auto -16px -16px auto",
+                  width: 92,
+                  height: 92,
+                  borderRadius: "50%",
+                  background: "rgba(15,23,42,0.04)",
+                  pointerEvents: "none",
+                },
+              }}
+            >
+
+              <PersonAddAltRoundedIcon
                 sx={{
-                  bgcolor: "#EF6C00",
-                  color: "#000",
-                  fontWeight: 700,
-                  textTransform: "none",
+                  fontSize: 50,
+                  color: "#7C3AED",
+                  mb: 2,
                 }}
+              />
+
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                gutterBottom
               >
-                Go to Payments
-              </Button>
+                Walk-in Booking
+              </Typography>
+
+              <Typography
+                color="text.secondary"
+                mb={3}
+              >
+                Create bookings for direct hotel arrivals.
+              </Typography>
 
             </Card>
 
