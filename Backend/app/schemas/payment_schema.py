@@ -12,9 +12,7 @@ class CreatePaymentRequest(BaseModel):
 
     reservation_id: int
 
-    payment_method: str = Field(
-        default="ONLINE"
-    )
+    payment_method: str = Field(default="RAZORPAY")
 
 
 # ==========================================================
@@ -25,9 +23,11 @@ class CreatePaymentResponse(BaseModel):
 
     reservation_id: int
 
+    payment_id: int
+
     order_id: str
 
-    amount: float
+    amount: int
 
     currency: str
 

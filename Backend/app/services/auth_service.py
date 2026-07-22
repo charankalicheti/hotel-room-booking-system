@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.models.customer import Customer
+from app.models.reservation import Reservation
 from app.models.admin import Admin
 
 from app.schemas.auth_schema import (
@@ -648,8 +649,25 @@ def delete_customer(
             detail="Customer not found."
         )
 
+    linked_reservations = (
+        db.query(Reservation)
+        .filter(Reservation.customer_id == customer_id)
+        .all()
+    )
+
+    for reservation in linked_reservations:
+        db.delete(reservation)
+
     db.delete(customer)
-    db.commit()
+
+    try:
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete customer because related reservations exist."
+        ) from exc
 
     return {
         "success": True,

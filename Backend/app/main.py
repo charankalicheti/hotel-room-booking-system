@@ -33,8 +33,11 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://[::1]:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -52,6 +55,7 @@ from app.routers import (
     bookings,
     payments,
     receptionist,
+    walk_in,
 )
 
 app.include_router(auth.router)
@@ -60,6 +64,7 @@ app.include_router(rooms.router)
 app.include_router(bookings.router)
 app.include_router(payments.router)
 app.include_router(receptionist.router)
+app.include_router(walk_in.router)
 app.include_router(report.router)
 
 # ==========================================================
