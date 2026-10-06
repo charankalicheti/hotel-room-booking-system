@@ -16,3 +16,11 @@ Browser : http://52.90.235.22:3000
 
 **Database :**
 RDS need to run independently
+
+Admin credintials :
+name : Admin
+email : admin@hotel.com
+modile :'9999999999',
+Pass :' Admin@123
+role : 'admin'
+);
